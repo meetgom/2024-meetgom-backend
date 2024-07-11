@@ -4,14 +4,14 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "event_access_codes")
-data class EventAccessCode(
+data class EventAccessCodeEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    val event: Event,
+    val event: EventEntity,
 
     @Column(length = 128)
     val code: String,

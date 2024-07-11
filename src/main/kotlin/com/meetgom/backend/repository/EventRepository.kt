@@ -1,7 +1,7 @@
 package com.meetgom.backend.repository
 
-import com.meetgom.backend.entity.Event
+import com.meetgom.backend.entity.EventEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface EventRepository : JpaRepository<Event, Long> {
+interface EventRepository : JpaRepository<EventEntity, Long> {
 }

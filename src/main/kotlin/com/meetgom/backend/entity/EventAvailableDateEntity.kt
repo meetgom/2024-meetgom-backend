@@ -3,15 +3,15 @@ package com.meetgom.backend.entity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "event_available_days_of_week")
-data class EventAvailableDayOfWeek(
+@Table(name = "event_available_dates")
+data class EventAvailableDateEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val availableDateId: Long? = null,
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    val event: Event,
+    val event: EventEntity,
 
-    val dayOfWeek: Byte
+    val date: java.time.LocalDate
 )
