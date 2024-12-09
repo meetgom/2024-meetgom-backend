@@ -1,7 +1,6 @@
-package com.meetgom.backend.entity
+package com.meetgom.backend.temp.entity
 
 import jakarta.persistence.*
-import jdk.jfr.Event
 
 @Entity
 @Table(name = "event_available_days_of_week")

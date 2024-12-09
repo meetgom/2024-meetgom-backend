@@ -1,6 +1,4 @@
-package com.meetgom.backend.api.request
-
-import com.meetgom.backend.model.EventDateType
+package com.meetgom.backend.temp.model.http.response
 
 data class EventCreateRequest(
     val name: String,

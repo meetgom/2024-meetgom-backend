@@ -1,6 +1,6 @@
-package com.meetgom.backend.entity
+package com.meetgom.backend.temp.entity
 
-import com.meetgom.backend.model.EventDateType
+import com.meetgom.backend.temp.model.domain.EventDateType
 import jakarta.persistence.*
 
 @Entity

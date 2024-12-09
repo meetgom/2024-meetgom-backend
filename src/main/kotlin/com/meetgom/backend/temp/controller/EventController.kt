@@ -1,19 +1,24 @@
-package com.meetgom.backend.api.controller
+package com.meetgom.backend.temp.controller
 
-import com.meetgom.backend.api.request.EventCreateRequest
-import com.meetgom.backend.entity.EventEntity
-import com.meetgom.backend.model.EventDateType
-import com.meetgom.backend.model.Weekday
-import com.meetgom.backend.service.EventService
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import com.meetgom.backend.temp.model.http.response.EventCreateRequest
+import com.meetgom.backend.temp.model.domain.EventDateType
+import com.meetgom.backend.temp.model.domain.Weekday
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/events")
 class EventController(private val eventService: EventService) {
+
+    init {
+
+    }
+
     @PostMapping
-    fun createEvent(@RequestBody eventCreateRequest: EventCreateRequest) : EventEntity {
+    fun createEvent(@RequestBody eventCreateRequest: EventCreateRequest): EventEntity {
         return eventService.createEvent(
             name = eventCreateRequest.name,
             timeZone = eventCreateRequest.timeZone,

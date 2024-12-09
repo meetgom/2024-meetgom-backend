@@ -1,4 +1,4 @@
-package com.meetgom.backend.entity
+package com.meetgom.backend.temp.entity
 
 import jakarta.persistence.*
 

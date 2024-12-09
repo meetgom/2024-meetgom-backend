@@ -1,4 +1,4 @@
-package com.meetgom.backend.model
+package com.meetgom.backend.temp.model.domain
 
 enum class Weekday(val value: Int) {
     MONDAY(1),

@@ -1,12 +1,7 @@
-package com.meetgom.backend.service
+package com.meetgom.backend.temp.service
 
-import com.meetgom.backend.api.controller.EventController
-import com.meetgom.backend.entity.EventAvailableDateEntity
-import com.meetgom.backend.entity.EventAvailableDayOfWeekEntity
-import com.meetgom.backend.entity.EventEntity
-import com.meetgom.backend.model.EventDateType
-import com.meetgom.backend.model.Weekday
-import com.meetgom.backend.repository.EventRepository
+import com.meetgom.backend.temp.model.domain.EventDateType
+import com.meetgom.backend.temp.model.domain.Weekday
 import com.meetgom.backend.util.encodeDaysToByte
 import org.springframework.stereotype.Service
 import java.time.LocalDate

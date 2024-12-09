@@ -1,6 +1,6 @@
 package com.meetgom.backend.util
 
-import com.meetgom.backend.model.Weekday
+import com.meetgom.backend.temp.model.domain.Weekday
 
 fun encodeDaysToByte(days: List<Weekday>): Byte {
     var bitMask = 0
