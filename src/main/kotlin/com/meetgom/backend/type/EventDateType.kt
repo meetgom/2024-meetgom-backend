@@ -1,4 +1,4 @@
-package com.meetgom.backend.temp.model.domain
+package com.meetgom.backend.type
 
 enum class EventDateType {
     SPECIFIC_DATES, RECURRING_WEEKDAYS
