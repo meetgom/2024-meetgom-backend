@@ -1,5 +1,6 @@
 package com.meetgom.backend.entity
 
+import com.meetgom.backend.model.domain.TimeZone
 import jakarta.persistence.*
 
 
@@ -14,4 +15,12 @@ class TimeZoneEntity(
 
     @Column(name = "active")
     val active: Boolean
-)
+) {
+    fun toDomain(): TimeZone {
+        return TimeZone(
+            id = this.id,
+            name = this.name,
+            active = this.active
+        )
+    }
+}

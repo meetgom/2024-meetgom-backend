@@ -1,3 +1,11 @@
+#### READ EVENT
+
+GET {{baseurl}}/v1/events/create
+Accept: application/json
+Content-Type: application/json
+
+###
+
 POST {{baseurl}}/v1/events
 Accept: application/json
 Content-Type: application/json
@@ -12,18 +20,4 @@ Content-Type: application/json
   "endTime": 1020
 }
 
-####
 
-POST {{baseurl}}/v1/events
-Accept: application/json
-Content-Type: application/json
-
-{
-  "name": "Event 1",
-  "timeZone": "America/New_York",
-  "eventDateType": "RECURRING_WEEKDAYS",
-  "specificDates": null,
-  "recurringWeekdays": ["MONDAY", "TUESDAY"],
-  "startTime": 540,
-  "endTime": 1020
-}
