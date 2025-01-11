@@ -59,12 +59,12 @@ data class PostEventSheetRequest(
     val activeEndDateTime: LocalDateTime?,
 
     @Schema(
-        title = "Is Active",
-        description = "이벤트 시트 활성 여부 (미사용)",
+        title = "Manual Active",
+        description = "이벤트 시트 수동 활성 여부 (미사용)",
         nullable = true,
         defaultValue = "true",
     )
-    val isActive: Boolean?,
+    val manualActive: Boolean?,
 
     @Size(min = 1, max = 100)
     @Schema(

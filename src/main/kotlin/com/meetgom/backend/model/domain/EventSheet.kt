@@ -19,6 +19,12 @@ data class EventSheet(
     val eventCode: EventCode,
     val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null
 ) {
+    private fun isActive(): Boolean {
+        val now = LocalDateTime.now()
+        return (this.activeStartDateTime == null || this.activeStartDateTime.isBefore(now)) &&
+                (this.activeEndDateTime == null || this.activeEndDateTime.isAfter(now)) && manualActive
+    }
+
     fun toEntity(): EventSheetEntity {
         val eventSheetEntity = EventSheetEntity(
             name = this.name,
@@ -48,7 +54,7 @@ data class EventSheet(
             activeEndDateTime = this.activeEndDateTime,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            isActive = this.manualActive,
+            isActive = this.isActive(),
             timeZone = this.timeZone.region,
             eventSheetTimeSlots = this.eventSheetTimeSlots?.map { it.toResponse() } ?: listOf()
         )

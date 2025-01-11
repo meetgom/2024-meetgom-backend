@@ -1,19 +1,92 @@
 package com.meetgom.backend.model.http.response
 
 import com.meetgom.backend.type.EventDateType
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
 data class EventSheetResponse(
+    @Schema(
+        title = "ID",
+        description = "이벤트 시트 ID",
+        defaultValue = "id",
+    )
     val id: Long?,
+
+    @Schema(
+        title = "Event Code",
+        description = "이벤트 시트 코드",
+        defaultValue = "word-word-word",
+    )
     val eventCode: String,
+
+    @Schema(
+        title = "Name",
+        description = "이벤트 시트 명",
+        defaultValue = "name",
+    )
     val name: String,
+
+    @Schema(
+        title = "Description",
+        description = "이벤트 시트 설명",
+        defaultValue = "description",
+    )
     val description: String?,
+
+    @Schema(
+        title = "Event Date Type",
+        description = "이벤트 시트 시간 타입",
+        defaultValue = "SPECIFIC_DATES | RECURRING_WEEKDAYS",
+    )
     val eventDateType: EventDateType,
+
+    @Schema(
+        title = "Active Start Date",
+        description = "이벤트 시트 활성 시작 시간",
+        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+    )
     val activeStartDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Active End Date",
+        description = "이벤트 시트 활성 종료 시간",
+        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+    )
     val activeEndDateTime: LocalDateTime?,
-    val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?,
-    val isActive: Boolean,
+
+    @Schema(
+        title = "Time Zone",
+        description = "이벤트 시트 시간대",
+        defaultValue = "Asia/Seoul",
+    )
     val timeZone: String,
-    val eventSheetTimeSlots: List<EventSheetTimeSlotResponse>
-)
+
+    @Schema(
+        title = "Event Sheet Time Slots",
+        description = "이벤트 시트 시간 슬롯 목록",
+    )
+    val eventSheetTimeSlots: List<EventSheetTimeSlotResponse>,
+
+    @Schema(
+        title = "Is Active",
+        description = "이벤트 시트 활성 여부",
+        defaultValue = "true",
+    )
+    val isActive: Boolean,
+
+    @Schema(
+        title = "Created At",
+        description = "이벤트 시트 생성 시각",
+        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+    )
+    val createdAt: LocalDateTime?,
+
+    @Schema(
+        title = "Updated At",
+        description = "이벤트 시트 업데이트 시각",
+        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+    )
+    val updatedAt: LocalDateTime?,
+
+
+    )

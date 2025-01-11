@@ -31,7 +31,7 @@ class EventSheetService(
         eventDateType: EventDateType,
         activeStartDateTime: LocalDateTime?,
         activeEndDateTime: LocalDateTime?,
-        isActive: Boolean,
+        manualActive: Boolean,
         eventSheetTimeSlots: List<EventSheetTimeSlot>,
         timeZoneRegion: String,
         wordCount: Int
@@ -44,7 +44,7 @@ class EventSheetService(
             eventDateType = eventDateType,
             activeStartDateTime = activeStartDateTime,
             activeEndDateTime = activeEndDateTime,
-            manualActive = isActive,
+            manualActive = manualActive,
             eventCode = eventCode,
             timeZone = timeZone,
             eventSheetTimeSlots = eventSheetTimeSlots

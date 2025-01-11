@@ -10,7 +10,7 @@ class TimeUtil private constructor() {
         fun intTimeToTimeString(timeInt: Int): String {
             val hour = timeInt / 60
             val minute = timeInt % 60
-            return "${hour}:${minute}"
+            return "%02d:%02d".format(hour, minute)
         }
     }
 }
