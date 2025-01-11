@@ -5,7 +5,7 @@ import com.meetgom.backend.type.EventDateType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import java.util.*
+import java.time.LocalDateTime
 
 @Entity(name = "event_sheet")
 class EventSheetEntity(
@@ -23,22 +23,22 @@ class EventSheetEntity(
     @Column(name = "event_date_type")
     val eventDateType: EventDateType,
 
-    @Column(name = "active_start_date")
-    val activeStartDate: Date?,
+    @Column(name = "active_start_date_time")
+    val activeStartDateTime: LocalDateTime?,
 
-    @Column(name = "active_end_date")
-    val activeEndDate: Date?,
+    @Column(name = "active_end_date_time")
+    val activeEndDateTime: LocalDateTime?,
 
     @CreationTimestamp
     @Column(name = "created_at")
-    val createdAt: Date? = null,
+    val createdAt: LocalDateTime? = null,
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    val updatedAt: Date? = null,
+    val updatedAt: LocalDateTime? = null,
 
-    @Column(name = "is_active")
-    val isActive: Boolean,
+    @Column(name = "manual_active")
+    val manualActive: Boolean,
 
     @ManyToOne
     @JoinColumn(name = "time_zone_id")
@@ -65,11 +65,11 @@ class EventSheetEntity(
             name = this.name,
             description = this.description,
             eventDateType = this.eventDateType,
-            activeStartDate = this.activeStartDate,
-            activeEndDate = this.activeEndDate,
+            activeStartDateTime = this.activeStartDateTime,
+            activeEndDateTime = this.activeEndDateTime,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            isActive = this.isActive,
+            manualActive = this.manualActive,
             timeZone = this.timeZoneEntity.toDomain(),
             eventCode = eventCode.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities?.map { it.toDomain() } ?: listOf()

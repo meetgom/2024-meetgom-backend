@@ -4,11 +4,12 @@ import com.meetgom.backend.entity.EventSheetEntity
 import com.meetgom.backend.entity.EventSheetTimeSlotEntity
 import com.meetgom.backend.entity.EventSheetTimeSlotPrimaryKey
 import com.meetgom.backend.model.http.response.EventSheetTimeSlotResponse
-import java.util.Date
+import com.meetgom.backend.utils.TimeUtil
+import java.time.LocalDate
 
 data class EventSheetTimeSlot(
     val eventSheetId: Long? = null,
-    val date: Date,
+    val date: LocalDate,
     val startTime: Int,
     val endTime: Int
 ) {
@@ -27,8 +28,8 @@ data class EventSheetTimeSlot(
     fun toResponse(): EventSheetTimeSlotResponse {
         return EventSheetTimeSlotResponse(
             date = this.date,
-            startTime = this.startTime,
-            endTime = this.endTime
+            startTime = TimeUtil.intTimeToTimeString(this.startTime),
+            endTime = TimeUtil.intTimeToTimeString(this.endTime)
         )
     }
 }

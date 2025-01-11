@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.3.1"
+    id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.5"
     kotlin("plugin.jpa") version "1.9.24"
     kotlin("jvm") version "1.9.24"
@@ -35,8 +35,8 @@ dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    // Sagger 3.0.0
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+    // Sagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1")
 
     // Lombok
     implementation("org.projectlombok:lombok")

@@ -3,30 +3,30 @@ package com.meetgom.backend.model.domain
 import com.meetgom.backend.entity.EventSheetEntity
 import com.meetgom.backend.model.http.response.EventSheetResponse
 import com.meetgom.backend.type.EventDateType
-import java.util.Date
+import java.time.LocalDateTime
 
 data class EventSheet(
     val id: Long? = null,
     val name: String,
     val description: String?,
     val eventDateType: EventDateType,
-    val activeStartDate: Date?,
-    val activeEndDate: Date?,
-    val createdAt: Date? = null,
-    val updatedAt: Date? = null,
-    val isActive: Boolean,
+    val activeStartDateTime: LocalDateTime?,
+    val activeEndDateTime: LocalDateTime?,
+    val createdAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null,
+    val manualActive: Boolean,
     val timeZone: TimeZone,
     val eventCode: EventCode,
     val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null
 ) {
     fun toEntity(): EventSheetEntity {
-        var eventSheetEntity = EventSheetEntity(
+        val eventSheetEntity = EventSheetEntity(
             name = this.name,
             description = this.description,
             eventDateType = this.eventDateType,
-            activeStartDate = this.activeStartDate,
-            activeEndDate = this.activeEndDate,
-            isActive = this.isActive,
+            activeStartDateTime = this.activeStartDateTime,
+            activeEndDateTime = this.activeEndDateTime,
+            manualActive = this.manualActive,
             timeZoneEntity = this.timeZone.toEntity(),
             eventCode = this.eventCode.toEntity()
         )
@@ -44,12 +44,12 @@ data class EventSheet(
             name = this.name,
             description = this.description,
             eventDateType = this.eventDateType,
-            activeStartDate = this.activeStartDate,
-            activeEndDate = this.activeEndDate,
+            activeStartDateTime = this.activeStartDateTime,
+            activeEndDateTime = this.activeEndDateTime,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            isActive = this.isActive,
-            timeZone = this.timeZone.toResponse(),
+            isActive = this.manualActive,
+            timeZone = this.timeZone.region,
             eventSheetTimeSlots = this.eventSheetTimeSlots?.map { it.toResponse() } ?: listOf()
         )
     }

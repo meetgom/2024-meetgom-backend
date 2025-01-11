@@ -10,8 +10,14 @@ class TimeZoneEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
-    @Column(name = "name", length = 128)
-    val name: String,
+    @Column(name = "region", length = 128)
+    val region: String,
+
+    @Column(name = "gmt_offset_str", length = 12)
+    val offset: String,
+
+    @Column(name = "gmt_offset")
+    val gmtOffset: Int,
 
     @Column(name = "active")
     val active: Boolean
@@ -19,7 +25,9 @@ class TimeZoneEntity(
     fun toDomain(): TimeZone {
         return TimeZone(
             id = this.id,
-            name = this.name,
+            region = this.region,
+            offset = this.offset,
+            gmtOffset = this.gmtOffset,
             active = this.active
         )
     }

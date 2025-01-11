@@ -1,7 +1,7 @@
 package com.meetgom.backend.model.http.response
 
 import com.meetgom.backend.type.EventDateType
-import java.util.*
+import java.time.LocalDateTime
 
 data class EventSheetResponse(
     val id: Long?,
@@ -9,11 +9,11 @@ data class EventSheetResponse(
     val name: String,
     val description: String?,
     val eventDateType: EventDateType,
-    val activeStartDate: Date?,
-    val activeEndDate: Date?,
-    val createdAt: Date?,
-    val updatedAt: Date?,
+    val activeStartDateTime: LocalDateTime?,
+    val activeEndDateTime: LocalDateTime?,
+    val createdAt: LocalDateTime?,
+    val updatedAt: LocalDateTime?,
     val isActive: Boolean,
-    val timeZone: TimeZoneResponse,
+    val timeZone: String,
     val eventSheetTimeSlots: List<EventSheetTimeSlotResponse>
 )

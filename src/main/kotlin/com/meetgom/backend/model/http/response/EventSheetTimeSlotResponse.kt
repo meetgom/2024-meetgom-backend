@@ -1,9 +1,9 @@
 package com.meetgom.backend.model.http.response
 
-import java.util.*
+import java.time.LocalDate
 
 class EventSheetTimeSlotResponse(
-    var date: Date,
-    var startTime: Int,
-    var endTime: Int
+    var date: LocalDate,
+    var startTime: String,
+    var endTime: String
 )

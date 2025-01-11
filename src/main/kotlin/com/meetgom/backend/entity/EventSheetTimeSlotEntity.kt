@@ -3,7 +3,7 @@ package com.meetgom.backend.entity
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
-import java.util.*
+import java.time.LocalDate
 
 @Entity(name = "event_sheet_time_slot")
 class EventSheetTimeSlotEntity(
@@ -36,5 +36,5 @@ data class EventSheetTimeSlotPrimaryKey(
     val eventSheetId: Long? = null,
 
     @Column(name = "date")
-    val date: Date
+    val date: LocalDate
 ) : Serializable

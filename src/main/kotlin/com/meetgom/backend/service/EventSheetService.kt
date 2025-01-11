@@ -11,8 +11,7 @@ import com.meetgom.backend.repository.TimeZoneRepository
 import com.meetgom.backend.type.EventDateType
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.util.*
-import kotlin.jvm.optionals.getOrNull
+import java.time.LocalDateTime
 
 @Service
 class EventSheetService(
@@ -30,27 +29,26 @@ class EventSheetService(
         name: String,
         description: String?,
         eventDateType: EventDateType,
-        activeStartDate: Date?,
-        activeEndDate: Date?,
+        activeStartDateTime: LocalDateTime?,
+        activeEndDateTime: LocalDateTime?,
         isActive: Boolean,
         eventSheetTimeSlots: List<EventSheetTimeSlot>,
-        timeZoneId: Long,
+        timeZoneRegion: String,
         wordCount: Int
     ): EventSheet {
-        val timeZone = timeZoneRepository.findById(timeZoneId).getOrNull()?.toDomain() ?: throw Exception("Time zone not found")
+        val timeZone = timeZoneRepository.findByRegion(timeZoneRegion)?.toDomain() ?: throw Exception("Time zone not found")
         val eventCode = createEventSheetEventCode(wordCount = wordCount)
         val eventSheetEntity = EventSheet(
             name = name,
             description = description,
             eventDateType = eventDateType,
-            activeStartDate = activeStartDate,
-            activeEndDate = activeEndDate,
-            isActive = isActive,
+            activeStartDateTime = activeStartDateTime,
+            activeEndDateTime = activeEndDateTime,
+            manualActive = isActive,
             eventCode = eventCode,
             timeZone = timeZone,
             eventSheetTimeSlots = eventSheetTimeSlots
         ).toEntity()
-        println("eventSheetEntity: $eventSheetEntity")
         val savedEventSheet = eventSheetRepository.save(eventSheetEntity).toDomain()
         return savedEventSheet
     }
@@ -65,9 +63,9 @@ class EventSheetService(
         var eventCodeWords: List<EventCodeWordEntity> = listOf()
         var newEventCode: String = ""
         for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
-            eventCodeWords = eventCodeWordRepository.getRandomPinCodeWords(wordCount = wordCount)
+            eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
             newEventCode = eventCodeWords.joinToString("-") { it.word }
-            if (!eventCodeRepository.existsByPinCode(newEventCode))
+            if (!eventCodeRepository.existsByEventCode(newEventCode))
                 return EventCode(newEventCode)
         }
         throw Exception("Failed to create event code")
