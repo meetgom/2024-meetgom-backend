@@ -43,14 +43,14 @@ data class EventSheetResponse(
     @Schema(
         title = "Active Start Date",
         description = "이벤트 시트 활성 시작 시간",
-        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
     val activeStartDateTime: LocalDateTime?,
 
     @Schema(
         title = "Active End Date",
         description = "이벤트 시트 활성 종료 시간",
-        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
     val activeEndDateTime: LocalDateTime?,
 
@@ -60,6 +60,13 @@ data class EventSheetResponse(
         defaultValue = "Asia/Seoul",
     )
     val timeZone: String,
+
+    @Schema(
+        title = "Time Zone",
+        description = "호스트가 설정한 이벤트 시트 시간대",
+        defaultValue = "Asia/Seoul",
+    )
+    val hostTimeZone: String,
 
     @Schema(
         title = "Event Sheet Time Slots",
@@ -77,14 +84,14 @@ data class EventSheetResponse(
     @Schema(
         title = "Created At",
         description = "이벤트 시트 생성 시각",
-        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
     val createdAt: LocalDateTime?,
 
     @Schema(
         title = "Updated At",
         description = "이벤트 시트 업데이트 시각",
-        defaultValue = "yyyy-MM-ddTHH:mm:ssZ",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
     val updatedAt: LocalDateTime?,
 

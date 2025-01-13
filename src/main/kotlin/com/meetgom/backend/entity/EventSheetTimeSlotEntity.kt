@@ -3,18 +3,15 @@ package com.meetgom.backend.entity
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity(name = "event_sheet_time_slot")
 class EventSheetTimeSlotEntity(
     @EmbeddedId
     val eventSheetTimeSlotPrimaryKey: EventSheetTimeSlotPrimaryKey,
 
-    @Column(name = "start_time")
-    var startTime: Int,
-
-    @Column(name = "end_time")
-    var endTime: Int,
+    @Column(name = "end_date_time")
+    var endDateTime: LocalDateTime,
 
     @MapsId("eventSheetId")
     @ManyToOne(targetEntity = EventSheetEntity::class)
@@ -24,9 +21,8 @@ class EventSheetTimeSlotEntity(
     fun toDomain(): EventSheetTimeSlot {
         return EventSheetTimeSlot(
             eventSheetId = this.eventSheetTimeSlotPrimaryKey.eventSheetId,
-            date = this.eventSheetTimeSlotPrimaryKey.date,
-            startTime = this.startTime,
-            endTime = this.endTime
+            startDateTime = this.eventSheetTimeSlotPrimaryKey.startDateTime,
+            endDateTime = this.endDateTime
         )
     }
 }
@@ -35,6 +31,6 @@ class EventSheetTimeSlotEntity(
 data class EventSheetTimeSlotPrimaryKey(
     val eventSheetId: Long? = null,
 
-    @Column(name = "date")
-    val date: LocalDate
+    @Column(name = "start_date_time")
+    val startDateTime: LocalDateTime
 ) : Serializable

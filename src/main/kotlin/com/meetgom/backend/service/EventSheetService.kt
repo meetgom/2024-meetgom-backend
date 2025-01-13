@@ -21,7 +21,7 @@ class EventSheetService(
     private val timeZoneRepository: TimeZoneRepository
 ) {
     companion object {
-        const val EVENT_CODE_MAX_TRY_COUNT = 100
+        const val EVENT_CODE_MAX_TRY_COUNT = 1000
     }
 
     @Transactional
@@ -29,33 +29,53 @@ class EventSheetService(
         name: String,
         description: String?,
         eventDateType: EventDateType,
+        hostTimeZoneRegion: String,
         activeStartDateTime: LocalDateTime?,
         activeEndDateTime: LocalDateTime?,
         manualActive: Boolean,
         eventSheetTimeSlots: List<EventSheetTimeSlot>,
-        timeZoneRegion: String,
         wordCount: Int
     ): EventSheet {
-        val timeZone = timeZoneRepository.findByRegion(timeZoneRegion)?.toDomain() ?: throw Exception("Time zone not found")
+        val hostTimeZone =
+            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw Exception("Time zone not found")
         val eventCode = createEventSheetEventCode(wordCount = wordCount)
+        if (eventSheetTimeSlotsValidationCheck(eventSheetTimeSlots).not())
+            throw Exception("Event sheet time slots validation failed")
         val eventSheetEntity = EventSheet(
+            eventCode = eventCode,
             name = name,
             description = description,
             eventDateType = eventDateType,
+            hostTimeZone = hostTimeZone,
             activeStartDateTime = activeStartDateTime,
             activeEndDateTime = activeEndDateTime,
+            eventSheetTimeSlots = eventSheetTimeSlots,
             manualActive = manualActive,
-            eventCode = eventCode,
-            timeZone = timeZone,
-            eventSheetTimeSlots = eventSheetTimeSlots
-        ).toEntity()
-        val savedEventSheet = eventSheetRepository.save(eventSheetEntity).toDomain()
+            timeZone = hostTimeZone
+        )
+            .toEntity()
+        val savedEventSheet = eventSheetRepository.save(eventSheetEntity)
+            .toDomain()
         return savedEventSheet
     }
 
-    fun readEventSheetByEventCode(eventCode: String): EventSheet {
-        val eventSheetEntity = eventSheetRepository.findByEventCode(eventCode) ?: throw Exception("Event sheet not found")
-        return eventSheetEntity.toDomain()
+    fun readEventSheetByEventCode(
+        eventCode: String,
+        region: String?,
+        key: String?
+    ): EventSheet {
+        val eventSheet =
+            eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw Exception("Event sheet not found")
+        if (eventSheet.hostTimeZone.region == region) return eventSheet
+
+        val timeZone = region?.let {
+            if (eventSheet.timeZone.region == it) eventSheet.timeZone
+            else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw Exception("Time zone not found")
+        } ?: eventSheet.hostTimeZone
+
+        val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
+
+        return convertedEventSheet
     }
 
     // MARK: - Private Functions
@@ -69,5 +89,15 @@ class EventSheetService(
                 return EventCode(newEventCode)
         }
         throw Exception("Failed to create event code")
+    }
+
+    private fun eventSheetTimeSlotsValidationCheck(eventSheetTimeSlots: List<EventSheetTimeSlot>): Boolean {
+        eventSheetTimeSlots.sorted()
+            .forEachIndexed { index, eventSheetTimeSlot ->
+                if (index == 0) return@forEachIndexed
+                if (eventSheetTimeSlot.startDateTime.isBefore(eventSheetTimeSlots[index - 1].endDateTime))
+                    return false
+            }
+        return true
     }
 }

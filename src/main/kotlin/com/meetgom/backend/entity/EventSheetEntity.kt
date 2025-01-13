@@ -23,27 +23,6 @@ class EventSheetEntity(
     @Column(name = "event_date_type")
     val eventDateType: EventDateType,
 
-    @Column(name = "active_start_date_time")
-    val activeStartDateTime: LocalDateTime?,
-
-    @Column(name = "active_end_date_time")
-    val activeEndDateTime: LocalDateTime?,
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    val createdAt: LocalDateTime? = null,
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    val updatedAt: LocalDateTime? = null,
-
-    @Column(name = "manual_active")
-    val manualActive: Boolean,
-
-    @ManyToOne
-    @JoinColumn(name = "time_zone_id")
-    val timeZoneEntity: TimeZoneEntity,
-
     @OneToOne(
         cascade = [CascadeType.ALL],
         fetch = FetchType.LAZY
@@ -51,6 +30,20 @@ class EventSheetEntity(
     @JoinColumn(name = "event_code")
     val eventCode: EventCodeEntity,
 
+    // Host TimeZone
+    @ManyToOne
+    @JoinColumn(name = "host_time_zone_id")
+    val hostTimeZoneEntity: TimeZoneEntity,
+
+    // Host TimeZone 기준
+    @Column(name = "active_start_date_time")
+    val activeStartDateTime: LocalDateTime?,
+
+    // Host TimeZone 기준
+    @Column(name = "active_end_date_time")
+    val activeEndDateTime: LocalDateTime?,
+
+    // Host TimeZone 기준
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
@@ -58,6 +51,19 @@ class EventSheetEntity(
     )
     @JoinColumn(name = "event_sheet_id")
     var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>? = null,
+
+    // Server 기준
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    val updatedAt: LocalDateTime? = null,
+
+    // Server 기준
+    @CreationTimestamp
+    @Column(name = "created_at")
+    val createdAt: LocalDateTime? = null,
+
+    @Column(name = "manual_active")
+    val manualActive: Boolean,
 ) {
     fun toDomain(): EventSheet {
         return EventSheet(
@@ -70,7 +76,8 @@ class EventSheetEntity(
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             manualActive = this.manualActive,
-            timeZone = this.timeZoneEntity.toDomain(),
+            timeZone = this.hostTimeZoneEntity.toDomain(),
+            hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventCode = eventCode.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities?.map { it.toDomain() } ?: listOf()
         )

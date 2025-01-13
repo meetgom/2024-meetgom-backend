@@ -2,7 +2,6 @@ package com.meetgom.backend.model.http.request
 
 import com.meetgom.backend.type.EventDateType
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.constraints.Null
 import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 
@@ -46,7 +45,7 @@ data class PostEventSheetRequest(
         title = "Active Start Date",
         description = "이벤트 시트 활성 시작 시간(미사용)",
         nullable = true,
-        defaultValue = "2025-01-01T00:00:00"
+        defaultValue = "2025-01-01T00:00"
     )
     val activeStartDateTime: LocalDateTime?,
 
@@ -54,7 +53,7 @@ data class PostEventSheetRequest(
         title = "Active End Date",
         description = "이벤트 시트 활성 종료 시간(미사용)",
         nullable = true,
-        defaultValue = "2099-12-31T00:00:00"
+        defaultValue = "2099-12-31T00:00"
     )
     val activeEndDateTime: LocalDateTime?,
 

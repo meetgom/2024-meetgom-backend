@@ -4,32 +4,46 @@ import com.meetgom.backend.entity.EventSheetEntity
 import com.meetgom.backend.entity.EventSheetTimeSlotEntity
 import com.meetgom.backend.entity.EventSheetTimeSlotPrimaryKey
 import com.meetgom.backend.model.http.response.EventSheetTimeSlotResponse
-import com.meetgom.backend.utils.TimeUtil
-import java.time.LocalDate
+import com.meetgom.backend.utils.extends.addTimeZone
+import com.meetgom.backend.utils.extends.toLocalDateTimeWithTimeZone
+import java.time.LocalDateTime
 
 data class EventSheetTimeSlot(
     val eventSheetId: Long? = null,
-    val date: LocalDate,
-    val startTime: Int,
-    val endTime: Int
-) {
+    val startDateTime: LocalDateTime,
+    val endDateTime: LocalDateTime
+) : Comparable<EventSheetTimeSlot> {
+    override fun compareTo(other: EventSheetTimeSlot): Int {
+        return compareValuesBy(this, other, { it.startDateTime }, { it.endDateTime })
+    }
+
+    fun convertTimeZone(
+        hostTimeZone: TimeZone,
+        timeZone: TimeZone
+    ): EventSheetTimeSlot {
+        return EventSheetTimeSlot(
+            eventSheetId = this.eventSheetId,
+            startDateTime = this.startDateTime.addTimeZone(hostTimeZone).toLocalDateTimeWithTimeZone(timeZone),
+            endDateTime = this.endDateTime.addTimeZone(hostTimeZone).toLocalDateTimeWithTimeZone(timeZone)
+        )
+    }
+
+    // MARK: - Converters
     fun toEntity(eventSheetEntity: EventSheetEntity? = null): EventSheetTimeSlotEntity {
         return EventSheetTimeSlotEntity(
             eventSheetTimeSlotPrimaryKey = EventSheetTimeSlotPrimaryKey(
                 eventSheetId = this.eventSheetId,
-                date = this.date
+                startDateTime = this.startDateTime
             ),
-            startTime = this.startTime,
-            endTime = this.endTime,
+            endDateTime = this.endDateTime,
             eventSheetEntity = eventSheetEntity
         )
     }
 
     fun toResponse(): EventSheetTimeSlotResponse {
         return EventSheetTimeSlotResponse(
-            date = this.date,
-            startTime = TimeUtil.intTimeToTimeString(this.startTime),
-            endTime = TimeUtil.intTimeToTimeString(this.endTime)
+            startDateTime = startDateTime,
+            endDateTime = endDateTime
         )
     }
 }
