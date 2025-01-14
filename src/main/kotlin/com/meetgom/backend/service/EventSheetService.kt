@@ -66,12 +66,12 @@ class EventSheetService(
     ): EventSheet {
         val eventSheet =
             eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw Exception("Event sheet not found")
-        if (eventSheet.hostTimeZone.region == region) return eventSheet
+        if (region.isNullOrEmpty() || eventSheet.hostTimeZone.region == region) return eventSheet
 
-        val timeZone = region?.let {
+        val timeZone = region.let {
             if (eventSheet.timeZone.region == it) eventSheet.timeZone
             else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw Exception("Time zone not found")
-        } ?: eventSheet.hostTimeZone
+        }
 
         val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
 
@@ -95,7 +95,7 @@ class EventSheetService(
         eventSheetTimeSlots.sorted()
             .forEachIndexed { index, eventSheetTimeSlot ->
                 if (index == 0) return@forEachIndexed
-                if (eventSheetTimeSlot.startDateTime.isBefore(eventSheetTimeSlots[index - 1].endDateTime))
+                if (eventSheetTimeSlot.startTime.isBefore(eventSheetTimeSlots[index - 1].endTime))
                     return false
             }
         return true

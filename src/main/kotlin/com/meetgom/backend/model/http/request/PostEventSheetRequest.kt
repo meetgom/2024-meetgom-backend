@@ -2,10 +2,14 @@ package com.meetgom.backend.model.http.request
 
 import com.meetgom.backend.type.EventDateType
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
-@Schema(title = "Post Event Sheet Request", description = "POST")
+@Schema(title = "Post Event Sheet Request")
 data class PostEventSheetRequest(
     @Schema(
         title = "Name",
@@ -31,9 +35,6 @@ data class PostEventSheetRequest(
     )
     val timeZone: String,
 
-    @Schema(title = "Event Sheet Time Slots", description = "이벤트 시트 시간 슬롯 목록")
-    val eventSheetTimeSlots: List<PostEventSheetTimeSlotRequest>?,
-
     @Schema(
         title = "Pin Code",
         description = "이벤트 시트 접속 핀코드",
@@ -43,7 +44,7 @@ data class PostEventSheetRequest(
 
     @Schema(
         title = "Active Start Date",
-        description = "이벤트 시트 활성 시작 시간(미사용)",
+        description = "이벤트 시트 활성 시작 시간(옵션)",
         nullable = true,
         defaultValue = "2025-01-01T00:00"
     )
@@ -51,7 +52,7 @@ data class PostEventSheetRequest(
 
     @Schema(
         title = "Active End Date",
-        description = "이벤트 시트 활성 종료 시간(미사용)",
+        description = "이벤트 시트 활성 종료 시간(옵션)",
         nullable = true,
         defaultValue = "2099-12-31T00:00"
     )
@@ -59,7 +60,7 @@ data class PostEventSheetRequest(
 
     @Schema(
         title = "Manual Active",
-        description = "이벤트 시트 수동 활성 여부 (미사용)",
+        description = "이벤트 시트 수동 활성 여부(옵션)",
         nullable = true,
         defaultValue = "true",
     )
@@ -73,6 +74,190 @@ data class PostEventSheetRequest(
         defaultValue = "3",
         hidden = true
     )
-    val wordCount: Int?
+    val wordCount: Int?,
+
+    // MARK: - Event Sheet Time Slots
+    @Schema(title = "Event Sheet Time Slots", description = "이벤트 시트 시간 슬롯 목록")
+    val eventSheetTimeSlots: List<PostEventSheetTimeSlotRequest>,
+)
+
+@Schema(title = "Post Specific Dates Event Sheet Request")
+data class PostSpecificDatesEventSheetRequest(
+    @Schema(
+        title = "Name",
+        description = "이벤트 시트 이름",
+        required = true
+    )
+    val name: String,
+
+    @Schema(title = "Description", description = "이벤트 시트 설명")
+    val description: String?,
+
+    @Schema(
+        title = "Time Zone Region",
+        description = "이벤트 시트 시간대",
+        defaultValue = "Asia/Seoul"
+    )
+    val timeZone: String,
+
+    @Schema(
+        title = "Pin Code",
+        description = "이벤트 시트 접속 핀코드",
+        nullable = true,
+    )
+    val pinCode: String? = null,
+
+    @Schema(
+        title = "Active Start Date",
+        description = "이벤트 시트 활성 시작 시간(옵션)",
+        nullable = true,
+        defaultValue = "2025-01-01T00:00"
+    )
+    val activeStartDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Active End Date",
+        description = "이벤트 시트 활성 종료 시간(옵션)",
+        nullable = true,
+        defaultValue = "2099-12-31T00:00"
+    )
+    val activeEndDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Manual Active",
+        description = "이벤트 시트 수동 활성 여부(옵션)",
+        nullable = true,
+        defaultValue = "true",
+    )
+    val manualActive: Boolean?,
+
+    @Size(min = 1, max = 100)
+    @Schema(
+        title = "Word Count",
+        description = "이벤트 시트 코드 단어 수",
+        nullable = true,
+        defaultValue = "3",
+        hidden = true
+    )
+    val wordCount: Int?,
+
+    // MARK: - Event Sheet Time Slots를 위한 Specific Dates 설정
+    @Schema(
+        title = "Specific Dates",
+        description = "이벤트 시트 특정 날짜 목록(range 시 각 날짜로 만들어서 보내주세요)"
+    )
+    val specificDates: List<LocalDate>,
+
+    @Schema(
+        title = "Specific Date's Start Time",
+        description = "이벤트 시트 특정 날짜들의 시작 시간"
+    )
+    @Pattern(
+        regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
+        message = "시간 형식이 올바르지 않습니다."
+    )
+    val startTime: String,
+
+    @Schema(
+        title = "Specific Date's End Time",
+        description = "이벤트 시트 특정 날짜들의 종료 시간"
+    )
+    @Pattern(
+        regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
+        message = "시간 형식이 올바르지 않습니다."
+    )
+    val endTime: String,
+)
+
+
+@Schema(title = "Post Recurring Weekdays Event Sheet Request")
+data class PostRecurringWeekdaysEventSheetRequest(
+    @Schema(
+        title = "Name",
+        description = "이벤트 시트 이름",
+        required = true
+    )
+    val name: String,
+
+    @Schema(title = "Description", description = "이벤트 시트 설명")
+    val description: String?,
+
+    @Schema(
+        title = "Time Zone Region",
+        description = "이벤트 시트 시간대",
+        defaultValue = "Asia/Seoul"
+    )
+    val timeZone: String,
+
+    @Schema(
+        title = "Pin Code",
+        description = "이벤트 시트 접속 핀코드",
+        nullable = true,
+    )
+    val pinCode: String? = null,
+
+    @Schema(
+        title = "Active Start Date",
+        description = "이벤트 시트 활성 시작 시간(옵션)",
+        nullable = true,
+        defaultValue = "2025-01-01T00:00"
+    )
+    val activeStartDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Active End Date",
+        description = "이벤트 시트 활성 종료 시간(옵션)",
+        nullable = true,
+        defaultValue = "2099-12-31T00:00"
+    )
+    val activeEndDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Manual Active",
+        description = "이벤트 시트 수동 활성 여부(옵션)",
+        nullable = true,
+        defaultValue = "true",
+    )
+    val manualActive: Boolean?,
+
+    @Size(min = 1, max = 100)
+    @Schema(
+        title = "Word Count",
+        description = "이벤트 시트 코드 단어 수",
+        nullable = true,
+        defaultValue = "3",
+        hidden = true
+    )
+    val wordCount: Int?,
+
+    // MARK: - Event Sheet Time Slots를 위한 Recurring Weekdays 설정
+    @Schema(
+        title = "Recurring Weekdays",
+        description = "이벤트 시트 주기적인 요일 목록",
+        defaultValue = "[\"MONDAY\", \"TUESDAY\", \"WEDNESDAY\", \"THURSDAY\", \"FRIDAY\", \"SATURDAY\", \"SUNDAY\"]"
+    )
+    val recurringWeekdays: List<DayOfWeek>,
+
+    @Schema(
+        title = "Recurring Weekday's Start Time",
+        description = "이벤트 시트 주기적인 요일들의 시작 시간",
+        defaultValue = "00:00"
+    )
+    @Pattern(
+        regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
+        message = "시간 형식이 올바르지 않습니다."
+    )
+    val startTime: String,
+
+    @Schema(
+        title = "Recurring Weekday's End Time",
+        description = "이벤트 시트 주기적인 요일들의 종료 시간",
+        defaultValue = "23:59"
+    )
+    @Pattern(
+        regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
+        message = "시간 형식이 올바르지 않습니다."
+    )
+    val endTime: String,
 )
 

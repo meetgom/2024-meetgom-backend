@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TimeZoneRepository : JpaRepository<TimeZoneEntity, Long> {
-    @Query("SELECT t FROM time_zone t WHERE t.active = true")
-    fun findActiveTimeZones(): List<TimeZoneEntity>
+    @Query("SELECT t FROM time_zone t WHERE t.active = true and (lower(t.region) like lower(concat('%', :search, '%')))")
+    fun findActiveTimeZones(search: String?): List<TimeZoneEntity>
 
     @Query("SELECT t FROM time_zone t WHERE lower(t.region) = lower(:timeZoneRegion) and t.active = true")
     fun findByRegion(@Param("timeZoneRegion") timeZoneRegion: String): TimeZoneEntity?

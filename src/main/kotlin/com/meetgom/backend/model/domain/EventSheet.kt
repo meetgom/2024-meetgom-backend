@@ -38,7 +38,7 @@ data class EventSheet(
                 hostTimeZone = this.hostTimeZone,
                 timeZone = timeZone
             )
-        }
+        }?.flatten()
 
         return EventSheet(
             id = this.id,

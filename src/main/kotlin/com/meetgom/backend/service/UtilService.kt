@@ -7,5 +7,6 @@ import org.springframework.stereotype.Service
 class UtilService(
     private val timeZoneRepository: TimeZoneRepository
 ) {
-    fun readActiveTimeZones() = timeZoneRepository.findActiveTimeZones().map { it.toDomain().region }
+    fun readActiveTimeZones(search: String?) =
+        timeZoneRepository.findActiveTimeZones(search = search).map { it.toDomain().region }
 }
