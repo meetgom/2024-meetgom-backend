@@ -33,7 +33,7 @@ class EventSheetService(
         hostTimeZoneRegion: String,
         activeStartDateTime: LocalDateTime?,
         activeEndDateTime: LocalDateTime?,
-        manualActive: Boolean,
+        manualActive: Boolean?,
         eventSheetTimeSlots: List<EventSheetTimeSlot>,
         wordCount: Int
     ): EventSheet {

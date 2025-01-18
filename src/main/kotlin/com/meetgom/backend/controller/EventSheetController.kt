@@ -25,7 +25,7 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
             hostTimeZoneRegion = postEventSheetRequest.timeZone,
             activeStartDateTime = postEventSheetRequest.activeStartDateTime,
             activeEndDateTime = postEventSheetRequest.activeEndDateTime,
-            manualActive = postEventSheetRequest.manualActive ?: true,
+            manualActive = postEventSheetRequest.manualActive,
             eventSheetTimeSlots = postEventSheetRequest.eventSheetTimeSlots.map {
                 EventSheetTimeSlot(
                     date = it.date,
