@@ -5,6 +5,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-fun ZonedDateTime.toLocalDateTimeWithTimeZone(timeZone: TimeZone): LocalDateTime {
-    return this.withZoneSameInstant(ZoneId.of(timeZone.region)).toLocalDateTime()
+fun ZonedDateTime.toTimeZone(timeZone: TimeZone): ZonedDateTime {
+    return this.withZoneSameInstant(ZoneId.of(timeZone.region))
 }

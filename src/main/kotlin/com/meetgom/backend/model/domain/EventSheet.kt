@@ -2,10 +2,9 @@ package com.meetgom.backend.model.domain
 
 import com.meetgom.backend.entity.EventSheetEntity
 import com.meetgom.backend.model.http.response.EventSheetResponse
-import com.meetgom.backend.type.EventDateType
-import com.meetgom.backend.utils.extends.addTimeZone
-import com.meetgom.backend.utils.extends.toLocalDateTimeWithTimeZone
-import java.time.LocalDateTime
+import com.meetgom.backend.type.EventSheetType
+import com.meetgom.backend.utils.extends.alignTimeSlots
+import com.meetgom.backend.utils.extends.toTimeZone
 import java.time.ZonedDateTime
 
 data class EventSheet(
@@ -13,39 +12,43 @@ data class EventSheet(
     val eventCode: EventCode,
     val name: String,
     val description: String?,
-    val eventDateType: EventDateType,
+    val eventSheetType: EventSheetType,
     val hostTimeZone: TimeZone,
-    val activeStartDateTime: LocalDateTime?,
-    val activeEndDateTime: LocalDateTime?,
-    val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null,
-    val manualActive: Boolean,
-    val createdAt: LocalDateTime? = null,
-    val updatedAt: LocalDateTime? = null,
+    val activeStartDateTime: ZonedDateTime?,
+    val activeEndDateTime: ZonedDateTime?,
     val timeZone: TimeZone,
+    val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null,
+    val manualActive: Boolean? = false,
+    val createdAt: ZonedDateTime? = null,
+    val updatedAt: ZonedDateTime? = null,
 ) {
     private fun isActive(): Boolean {
         val now = ZonedDateTime.now()
-        return (this.activeStartDateTime?.addTimeZone(timeZone)?.isBefore(now) ?: true) &&
-                (this.activeEndDateTime?.addTimeZone(timeZone)?.isBefore(now) ?: true) &&
-                manualActive
+        manualActive?.let {
+            return it
+        }
+        return (this.activeStartDateTime?.isAfter(now) ?: true) &&
+                (this.activeEndDateTime?.isBefore(now) ?: true)
+
     }
 
-    fun convertTimeZone(timeZone: TimeZone): EventSheet {
-        val activeStartDateTime = this.activeStartDateTime?.addTimeZone(this.hostTimeZone)?.toLocalDateTimeWithTimeZone(timeZone)
-        val activeEndDateTime = this.activeEndDateTime?.addTimeZone(this.hostTimeZone)?.toLocalDateTimeWithTimeZone(timeZone)
+    fun convertTimeZone(to: TimeZone?): EventSheet {
+        val timeZone = to ?: hostTimeZone
+        val activeStartDateTime = this.activeStartDateTime?.toTimeZone(timeZone)
+        val activeEndDateTime = this.activeEndDateTime?.toTimeZone(timeZone)
         val eventSheetTimeSlots = this.eventSheetTimeSlots?.map {
             it.convertTimeZone(
-                hostTimeZone = this.hostTimeZone,
-                timeZone = timeZone
+                from = this.timeZone,
+                to = timeZone,
             )
-        }?.flatten()
+        }?.flatten()?.alignTimeSlots()
 
         return EventSheet(
             id = this.id,
             eventCode = this.eventCode,
             name = this.name,
             description = this.description,
-            eventDateType = this.eventDateType,
+            eventSheetType = this.eventSheetType,
             hostTimeZone = this.hostTimeZone,
             activeStartDateTime = activeStartDateTime,
             activeEndDateTime = activeEndDateTime,
@@ -57,20 +60,25 @@ data class EventSheet(
         )
     }
 
+    private fun convertSystemDefaultTimeZone(): EventSheet {
+        return this.convertTimeZone(TimeZone.defaultTimeZone)
+    }
+
     // MARK: - Converters
     fun toEntity(): EventSheetEntity {
+        val eventSheet = this.convertSystemDefaultTimeZone()
         val eventSheetEntity = EventSheetEntity(
-            name = this.name,
-            description = this.description,
-            eventDateType = this.eventDateType,
-            activeStartDateTime = this.activeStartDateTime,
-            activeEndDateTime = this.activeEndDateTime,
-            manualActive = this.manualActive,
-            hostTimeZoneEntity = this.hostTimeZone.toEntity(),
-            eventCode = this.eventCode.toEntity()
+            name = eventSheet.name,
+            description = eventSheet.description,
+            eventSheetType = eventSheet.eventSheetType,
+            activeStartDateTime = eventSheet.activeStartDateTime,
+            activeEndDateTime = eventSheet.activeEndDateTime,
+            manualActive = eventSheet.manualActive,
+            hostTimeZoneEntity = eventSheet.hostTimeZone.toEntity(),
+            eventCode = eventSheet.eventCode.toEntity()
         )
         val eventSheetTimeSlotEntities =
-            this.eventSheetTimeSlots?.map { it.toEntity(eventSheetEntity = eventSheetEntity) }?.toMutableList()
+            eventSheet.eventSheetTimeSlots?.map { it.toEntity(eventSheetEntity = eventSheetEntity) }?.toMutableList()
                 ?: mutableListOf()
         eventSheetEntity.eventSheetTimeSlotEntities = eventSheetTimeSlotEntities
         return eventSheetEntity
@@ -82,15 +90,17 @@ data class EventSheet(
             eventCode = this.eventCode.eventCode,
             name = this.name,
             description = this.description,
-            eventDateType = this.eventDateType,
-            activeStartDateTime = this.activeStartDateTime,
-            activeEndDateTime = this.activeEndDateTime,
+            eventSheetType = this.eventSheetType,
+            hostTimeZone = this.hostTimeZone.region,
+            activeStartDateTime = this.activeStartDateTime?.toLocalDateTime(),
+            activeEndDateTime = this.activeEndDateTime?.toLocalDateTime(),
+            manualActive = this.manualActive,
+            isActive = this.isActive(),
+            eventSheetTimeSlots = this.eventSheetTimeSlots?.map { it.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS) }
+                ?: listOf(),
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            isActive = this.isActive(),
-            timeZone = this.timeZone.region,
-            hostTimeZone = this.hostTimeZone.region,
-            eventSheetTimeSlots = this.eventSheetTimeSlots?.map { it.toResponse() } ?: listOf()
+            timeZone = this.timeZone.region
         )
     }
 }

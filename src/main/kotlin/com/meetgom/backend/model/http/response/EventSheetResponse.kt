@@ -1,8 +1,9 @@
 package com.meetgom.backend.model.http.response
 
-import com.meetgom.backend.type.EventDateType
+import com.meetgom.backend.type.EventSheetType
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 data class EventSheetResponse(
     @Schema(
@@ -38,21 +39,28 @@ data class EventSheetResponse(
         description = "이벤트 시트 시간 타입",
         defaultValue = "SPECIFIC_DATES | RECURRING_WEEKDAYS",
     )
-    val eventDateType: EventDateType,
+    val eventSheetType: EventSheetType,
 
     @Schema(
         title = "Active Start Date",
         description = "이벤트 시트 활성 시작 시간",
-        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss",
     )
     val activeStartDateTime: LocalDateTime?,
 
     @Schema(
         title = "Active End Date",
         description = "이벤트 시트 활성 종료 시간",
-        defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
+        defaultValue = "yyyy-MM-dd'T'hh:mm:ss",
     )
     val activeEndDateTime: LocalDateTime?,
+
+    @Schema(
+        title = "Manual Active",
+        description = "이벤트 시트 수동 활성",
+        defaultValue = "booelan?",
+    )
+    val manualActive: Boolean?,
 
     @Schema(
         title = "Time Zone",
@@ -86,14 +94,12 @@ data class EventSheetResponse(
         description = "이벤트 시트 생성 시각",
         defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
-    val createdAt: LocalDateTime?,
+    val createdAt: ZonedDateTime?,
 
     @Schema(
         title = "Updated At",
         description = "이벤트 시트 업데이트 시각",
         defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
-    val updatedAt: LocalDateTime?,
-
-
-    )
+    val updatedAt: ZonedDateTime?,
+)

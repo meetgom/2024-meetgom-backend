@@ -1,11 +1,11 @@
 package com.meetgom.backend.entity
 
 import com.meetgom.backend.model.domain.EventSheet
-import com.meetgom.backend.type.EventDateType
+import com.meetgom.backend.type.EventSheetType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @Entity(name = "event_sheet")
 class EventSheetEntity(
@@ -20,8 +20,8 @@ class EventSheetEntity(
     val description: String?,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_date_type")
-    val eventDateType: EventDateType,
+    @Column(name = "event_sheet_type")
+    val eventSheetType: EventSheetType,
 
     @OneToOne(
         cascade = [CascadeType.ALL],
@@ -37,11 +37,11 @@ class EventSheetEntity(
 
     // Host TimeZone 기준
     @Column(name = "active_start_date_time")
-    val activeStartDateTime: LocalDateTime?,
+    val activeStartDateTime: ZonedDateTime?,
 
     // Host TimeZone 기준
     @Column(name = "active_end_date_time")
-    val activeEndDateTime: LocalDateTime?,
+    val activeEndDateTime: ZonedDateTime?,
 
     // Host TimeZone 기준
     @OneToMany(
@@ -55,22 +55,22 @@ class EventSheetEntity(
     // Server 기준
     @UpdateTimestamp
     @Column(name = "updated_at")
-    val updatedAt: LocalDateTime? = null,
+    val updatedAt: ZonedDateTime? = null,
 
     // Server 기준
     @CreationTimestamp
     @Column(name = "created_at")
-    val createdAt: LocalDateTime? = null,
+    val createdAt: ZonedDateTime? = null,
 
     @Column(name = "manual_active")
-    val manualActive: Boolean,
+    val manualActive: Boolean? = false,
 ) {
     fun toDomain(): EventSheet {
         return EventSheet(
             id = this.id,
             name = this.name,
             description = this.description,
-            eventDateType = this.eventDateType,
+            eventSheetType = this.eventSheetType,
             activeStartDateTime = this.activeStartDateTime,
             activeEndDateTime = this.activeEndDateTime,
             createdAt = this.createdAt,

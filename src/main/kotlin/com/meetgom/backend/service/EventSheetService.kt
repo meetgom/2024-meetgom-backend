@@ -8,9 +8,11 @@ import com.meetgom.backend.repository.EventSheetRepository
 import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository
 import com.meetgom.backend.repository.TimeZoneRepository
-import com.meetgom.backend.type.EventDateType
+import com.meetgom.backend.type.EventSheetType
+import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 @Service
@@ -28,7 +30,7 @@ class EventSheetService(
     fun createEventSheet(
         name: String,
         description: String?,
-        eventDateType: EventDateType,
+        eventSheetType: EventSheetType,
         hostTimeZoneRegion: String,
         activeStartDateTime: LocalDateTime?,
         activeEndDateTime: LocalDateTime?,
@@ -39,17 +41,16 @@ class EventSheetService(
         val hostTimeZone =
             timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw Exception("Time zone not found")
         val eventCode = createEventSheetEventCode(wordCount = wordCount)
-        if (eventSheetTimeSlotsValidationCheck(eventSheetTimeSlots).not())
-            throw Exception("Event sheet time slots validation failed")
+        val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
             eventCode = eventCode,
             name = name,
             description = description,
-            eventDateType = eventDateType,
+            eventSheetType = eventSheetType,
             hostTimeZone = hostTimeZone,
-            activeStartDateTime = activeStartDateTime,
-            activeEndDateTime = activeEndDateTime,
-            eventSheetTimeSlots = eventSheetTimeSlots,
+            activeStartDateTime = activeStartDateTime?.atTimeZone(hostTimeZone),
+            activeEndDateTime = activeEndDateTime?.atTimeZone(hostTimeZone),
+            eventSheetTimeSlots = validEventSheetTimeSlots,
             manualActive = manualActive,
             timeZone = hostTimeZone
         )
@@ -66,10 +67,10 @@ class EventSheetService(
     ): EventSheet {
         val eventSheet =
             eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw Exception("Event sheet not found")
-        if (region.isNullOrEmpty() || eventSheet.hostTimeZone.region == region) return eventSheet
 
         val timeZone = region.let {
-            if (eventSheet.timeZone.region == it) eventSheet.timeZone
+            if (it.isNullOrEmpty() || it == eventSheet.hostTimeZone.region) eventSheet.hostTimeZone
+            else if (it == eventSheet.timeZone.region) eventSheet.timeZone
             else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw Exception("Time zone not found")
         }
 
@@ -91,13 +92,20 @@ class EventSheetService(
         throw Exception("Failed to create event code")
     }
 
-    private fun eventSheetTimeSlotsValidationCheck(eventSheetTimeSlots: List<EventSheetTimeSlot>): Boolean {
+    private fun eventSheetTimeSlotsValidationCheck(
+        eventSheetType: EventSheetType,
+        eventSheetTimeSlots: List<EventSheetTimeSlot>
+    ): List<EventSheetTimeSlot> {
+        if (eventSheetType == EventSheetType.RECURRING_WEEKDAYS) {
+            val dayOfWeeks = eventSheetTimeSlots.map { it.date.dayOfWeek }
+            if (dayOfWeeks.distinct().size != dayOfWeeks.size)
+                throw Exception("Event sheet time slots validation failed")
+        }
         eventSheetTimeSlots.sorted()
-            .forEachIndexed { index, eventSheetTimeSlot ->
-                if (index == 0) return@forEachIndexed
-                if (eventSheetTimeSlot.startTime.isBefore(eventSheetTimeSlots[index - 1].endTime))
-                    return false
+            .forEach { eventSheetTimeSlot ->
+                if (eventSheetTimeSlot.startTime.isAfter(eventSheetTimeSlot.endTime))
+                    throw Exception("Event sheet time slots validation failed")
             }
-        return true
+        return eventSheetTimeSlots
     }
 }

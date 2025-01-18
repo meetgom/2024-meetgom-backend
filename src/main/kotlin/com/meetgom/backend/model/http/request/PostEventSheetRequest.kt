@@ -1,13 +1,13 @@
 package com.meetgom.backend.model.http.request
 
-import com.meetgom.backend.type.EventDateType
+import com.meetgom.backend.type.EventSheetType
+import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Schema(title = "Post Event Sheet Request")
 data class PostEventSheetRequest(
@@ -26,7 +26,7 @@ data class PostEventSheetRequest(
         description = "이벤트 시트 시간 타입 (SPECIFIC_DATES | RECURRING_WEEKDAYS)",
         required = true
     )
-    val eventDateType: EventDateType,
+    val eventSheetType: EventSheetType,
 
     @Schema(
         title = "Time Zone Region",
@@ -167,7 +167,28 @@ data class PostSpecificDatesEventSheetRequest(
         message = "시간 형식이 올바르지 않습니다."
     )
     val endTime: String,
-)
+) {
+    fun toPostEventSheetRequest(): PostEventSheetRequest {
+        val eventSheetTimeSlotsRequest = specificDates.map { date ->
+            PostEventSheetTimeSlotRequest(
+                date = date,
+                startTime = startTime,
+                endTime = endTime
+            )
+        }
+        return PostEventSheetRequest(
+            name = name,
+            description = description,
+            eventSheetType = EventSheetType.SPECIFIC_DATES,
+            timeZone = timeZone,
+            activeStartDateTime = activeStartDateTime,
+            activeEndDateTime = activeEndDateTime,
+            manualActive = manualActive,
+            eventSheetTimeSlots = eventSheetTimeSlotsRequest,
+            wordCount = wordCount ?: 3
+        )
+    }
+}
 
 
 @Schema(title = "Post Recurring Weekdays Event Sheet Request")
@@ -259,5 +280,27 @@ data class PostRecurringWeekdaysEventSheetRequest(
         message = "시간 형식이 올바르지 않습니다."
     )
     val endTime: String,
-)
+) {
+    fun toPostEventSheetRequest(): PostEventSheetRequest {
+        val eventSheetTimeSlotsRequest = this.recurringWeekdays.map {
+            val date = TimeUtils.getClosestDayOfWeek(it)
+            PostEventSheetTimeSlotRequest(
+                date = date,
+                startTime = this.startTime,
+                endTime = this.endTime
+            )
+        }
+        return PostEventSheetRequest(
+            name = this.name,
+            description = this.description,
+            eventSheetType = EventSheetType.RECURRING_WEEKDAYS,
+            timeZone = this.timeZone,
+            activeStartDateTime = this.activeStartDateTime,
+            activeEndDateTime = this.activeEndDateTime,
+            manualActive = this.manualActive,
+            eventSheetTimeSlots = eventSheetTimeSlotsRequest,
+            wordCount = this.wordCount
+        )
+    }
+}
 

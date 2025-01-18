@@ -3,21 +3,29 @@ package com.meetgom.backend.utils
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class TimeUtils {
     companion object {
-        const val BASE_TIME_FORMAT = "HH:mm"
+        val timeRegex: Regex = Regex("^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$")
+        val timeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
         fun timeStringToLocalTime(
             timeString: String,
-            allowMidnight: Boolean = true,
-            endOfDayToMidnight: Boolean = true
         ): LocalTime {
-            if (allowMidnight.not() && timeString == "00:00")
-                throw InternalError("00:00 is not allowed")
-            if (endOfDayToMidnight && timeString == "24:00")
-                return LocalTime.of(0, 0)
-            return LocalTime.parse(timeString)
+            val trimmedTimeString = timeString.trim()
+            if (!timeRegex.matches(trimmedTimeString))
+                throw IllegalArgumentException("Invalid time format: $timeString")
+            if (trimmedTimeString == "24:00")
+                return LocalTime.MAX
+            return LocalTime.parse(trimmedTimeString)
+        }
+
+        fun localTimeToTimeString(localTime: LocalTime): String {
+            if (localTime == LocalTime.MAX)
+                return "24:00"
+            val formatted = localTime.format(timeFormat)
+            return formatted
         }
 
         fun getClosestDayOfWeek(weekday: DayOfWeek): LocalDate {

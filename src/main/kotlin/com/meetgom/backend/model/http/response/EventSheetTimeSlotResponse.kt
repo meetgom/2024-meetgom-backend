@@ -2,8 +2,6 @@ package com.meetgom.backend.model.http.response
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 class EventSheetTimeSlotResponse(
     @Schema(title = "Date",
@@ -22,14 +20,14 @@ class EventSheetTimeSlotResponse(
     @Schema(
         title = "Start Date Time",
         description = "이벤트 시트 특정 날짜 구간 종료 시간",
-        defaultValue = "hh:mm",
+        defaultValue = "HH:mm",
     )
-    val startDateTime: String,
+    val startTime: String,
 
     @Schema(
         title = "End Date Time",
         description = "이벤트 시트 특정 날짜 구간 종료 시간",
-        defaultValue = "hh:mm",
+        defaultValue = "HH:mm",
     )
-    val endDateTime: String
+    val endTime: String
 )
