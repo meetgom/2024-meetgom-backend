@@ -2,8 +2,6 @@ package com.meetgom.backend.model.http.request
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Schema(title = "Post Event Sheet Time Slot Request")
 data class PostEventSheetTimeSlotRequest(

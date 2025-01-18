@@ -12,7 +12,6 @@ import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 @Service

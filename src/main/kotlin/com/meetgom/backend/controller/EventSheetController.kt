@@ -2,12 +2,10 @@ package com.meetgom.backend.controller
 
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import com.meetgom.backend.model.http.request.PostEventSheetRequest
-import com.meetgom.backend.model.http.request.PostEventSheetTimeSlotRequest
 import com.meetgom.backend.model.http.request.PostRecurringWeekdaysEventSheetRequest
 import com.meetgom.backend.model.http.request.PostSpecificDatesEventSheetRequest
 import com.meetgom.backend.model.http.response.EventSheetResponse
 import com.meetgom.backend.service.EventSheetService
-import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -47,6 +45,14 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
         return postEventSheet(postEventSheetRequest)
     }
 
+    // MARK: - 이벤트 타입에 따른 이벤트 시트 생성
+    @PostMapping(path = ["recurring-weekdays"])
+    @Operation(summary = "create Recurring Weekdays Event Sheet")
+    fun postRecurringWeekdaysEventSheet(@RequestBody postRecurringWeekdaysEventSheetRequest: PostRecurringWeekdaysEventSheetRequest): EventSheetResponse {
+        val postEventSheetRequest = postRecurringWeekdaysEventSheetRequest.toPostEventSheetRequest()
+        return postEventSheet(postEventSheetRequest)
+    }
+
     @GetMapping(path = ["/{eventCode}"])
     @Operation(summary = "read Event Sheet")
     fun getEventSheetByEventCode(
@@ -60,14 +66,5 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
             key = key
         )
         return eventSheet.toResponse()
-    }
-
-
-    // MARK: - 이벤트 타입에 따른 이벤트 시트 생성
-    @PostMapping(path = ["recurring-weekdays"])
-    @Operation(summary = "create Recurring Weekdays Event Sheet")
-    fun postRecurringWeekdaysEventSheet(@RequestBody postRecurringWeekdaysEventSheetRequest: PostRecurringWeekdaysEventSheetRequest): EventSheetResponse {
-        val postEventSheetRequest = postRecurringWeekdaysEventSheetRequest.toPostEventSheetRequest()
-        return postEventSheet(postEventSheetRequest)
     }
 }
