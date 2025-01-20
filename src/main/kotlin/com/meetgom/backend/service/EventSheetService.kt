@@ -1,6 +1,7 @@
 package com.meetgom.backend.service
 
 import com.meetgom.backend.entity.EventCodeWordEntity
+import com.meetgom.backend.exception.*
 import com.meetgom.backend.model.domain.EventSheet
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import com.meetgom.backend.model.domain.EventCode
@@ -38,7 +39,7 @@ class EventSheetService(
         wordCount: Int
     ): EventSheet {
         val hostTimeZone =
-            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw Exception("Time zone not found")
+            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw TimeZoneNotFoundException()
         val eventCode = createEventSheetEventCode(wordCount = wordCount)
         val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
@@ -65,12 +66,12 @@ class EventSheetService(
         key: String?
     ): EventSheet {
         val eventSheet =
-            eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw Exception("Event sheet not found")
+            eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw EventSheetNotFoundException()
 
         val timeZone = region.let {
             if (it.isNullOrEmpty() || it == eventSheet.hostTimeZone.region) eventSheet.hostTimeZone
             else if (it == eventSheet.timeZone.region) eventSheet.timeZone
-            else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw Exception("Time zone not found")
+            else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw TimeZoneNotFoundException()
         }
 
         val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
@@ -88,7 +89,7 @@ class EventSheetService(
             if (!eventCodeRepository.existsByEventCode(newEventCode))
                 return EventCode(newEventCode)
         }
-        throw Exception("Failed to create event code")
+        throw MaxEventCodesReachedException()
     }
 
     private fun eventSheetTimeSlotsValidationCheck(
@@ -98,12 +99,12 @@ class EventSheetService(
         if (eventSheetType == EventSheetType.RECURRING_WEEKDAYS) {
             val dayOfWeeks = eventSheetTimeSlots.map { it.date.dayOfWeek }
             if (dayOfWeeks.distinct().size != dayOfWeeks.size)
-                throw Exception("Event sheet time slots validation failed")
+                throw InvalidDayOfWeeksException()
         }
         eventSheetTimeSlots.sorted()
             .forEach { eventSheetTimeSlot ->
                 if (eventSheetTimeSlot.startTime.isAfter(eventSheetTimeSlot.endTime))
-                    throw Exception("Event sheet time slots validation failed")
+                    throw InvalidEventSheetTimeSlotsException()
             }
         return eventSheetTimeSlots
     }

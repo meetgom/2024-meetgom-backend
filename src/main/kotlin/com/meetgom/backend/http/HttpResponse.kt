@@ -1,8 +1,6 @@
 package com.meetgom.backend.http
 
 import io.swagger.v3.oas.annotations.media.Schema
-import org.springframework.http.HttpStatusCode
-import org.springframework.http.ResponseEntity
 
 data class HttpResponse<T>(
     @Schema(
@@ -18,6 +16,14 @@ data class HttpResponse<T>(
         nullable = true,
     )
     val data: T? = null,
+
+    @Schema(
+        title = "error",
+        description = "에러",
+        nullable = true,
+    )
+    val error: String? = null,
+
     @Schema(
         title = "message",
         description = "메세지",
@@ -32,8 +38,9 @@ data class HttpResponse<T>(
             message = message
         )
 
-        fun <T> error(error: HttpException): HttpResponse<T> = HttpResponse(
+        fun error(error: Exception): HttpResponse<Any> = HttpResponse(
             success = false,
+            error = (error as? HttpException)?.status?.name ?: "UNCAUGHT_ERROR",
             message = error.message
         )
     }

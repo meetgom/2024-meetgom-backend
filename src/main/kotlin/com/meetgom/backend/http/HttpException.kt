@@ -1,10 +1,8 @@
 package com.meetgom.backend.http
 
-class HttpException(
-    status: HttpStatus,
-    message: String?,
-) : Exception(
-    "${status.status}: $message"
-) {
+import org.springframework.http.HttpStatus
 
-}
+open class HttpException(
+    val status: HttpStatus,
+    message: String?,
+) : Exception(message)

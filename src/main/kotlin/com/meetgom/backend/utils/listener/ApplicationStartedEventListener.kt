@@ -4,6 +4,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
+import java.util.*
 
 @Component
 class ApplicationStartedEventListener : ApplicationListener<ApplicationStartedEvent> {
@@ -13,7 +14,6 @@ class ApplicationStartedEventListener : ApplicationListener<ApplicationStartedEv
     }
 
     override fun onApplicationEvent(event: ApplicationStartedEvent) {
-        println("Application Started")
         isStarted = true
         startTime = ZonedDateTime.now()
     }
