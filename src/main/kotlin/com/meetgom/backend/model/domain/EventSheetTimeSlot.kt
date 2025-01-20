@@ -1,8 +1,8 @@
 package com.meetgom.backend.model.domain
 
-import com.meetgom.backend.entity.EventSheetEntity
-import com.meetgom.backend.entity.EventSheetTimeSlotEntity
-import com.meetgom.backend.entity.EventSheetTimeSlotPrimaryKey
+import com.meetgom.backend.entity.event_sheet.EventSheetEntity
+import com.meetgom.backend.entity.event_sheet.EventSheetTimeSlotEntity
+import com.meetgom.backend.entity.event_sheet.EventSheetTimeSlotPrimaryKey
 import com.meetgom.backend.model.http.response.EventSheetTimeSlotResponse
 import com.meetgom.backend.utils.TimeUtils
 import com.meetgom.backend.utils.extends.*

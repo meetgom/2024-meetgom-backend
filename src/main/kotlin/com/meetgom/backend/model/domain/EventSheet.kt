@@ -1,6 +1,6 @@
 package com.meetgom.backend.model.domain
 
-import com.meetgom.backend.entity.EventSheetEntity
+import com.meetgom.backend.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.model.http.response.EventSheetResponse
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.alignTimeSlots

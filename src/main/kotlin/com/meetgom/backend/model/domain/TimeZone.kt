@@ -1,6 +1,6 @@
 package com.meetgom.backend.model.domain
 
-import com.meetgom.backend.entity.TimeZoneEntity
+import com.meetgom.backend.entity.common.TimeZoneEntity
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.TimeZone as JavaTimeZone

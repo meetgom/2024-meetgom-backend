@@ -1,4 +1,4 @@
-package com.meetgom.backend.security
+package com.meetgom.backend.security.Encrypt
 
 import com.meetgom.backend.utils.extends.toHexString
 import java.security.SecureRandom

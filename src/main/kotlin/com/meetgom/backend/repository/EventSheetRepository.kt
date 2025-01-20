@@ -1,6 +1,6 @@
 package com.meetgom.backend.repository
 
-import com.meetgom.backend.entity.EventSheetEntity
+import com.meetgom.backend.entity.event_sheet.EventSheetEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

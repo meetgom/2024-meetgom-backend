@@ -1,7 +1,7 @@
 package com.meetgom.backend.model.domain
 
-import com.meetgom.backend.entity.EventSheetEntity
-import com.meetgom.backend.entity.EventCodeEntity
+import com.meetgom.backend.entity.event_sheet.EventSheetEntity
+import com.meetgom.backend.entity.event_sheet.EventCodeEntity
 
 data class EventCode(
     val eventCode: String,

@@ -1,4 +1,4 @@
-package com.meetgom.backend.exception.event_sheet
+package com.meetgom.backend.exception.exceptions
 
 import com.meetgom.backend.exception.common.MGExceptionStatus
 import com.meetgom.backend.exception.common.MGExceptions

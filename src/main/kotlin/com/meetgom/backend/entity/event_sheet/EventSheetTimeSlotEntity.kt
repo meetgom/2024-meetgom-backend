@@ -1,4 +1,4 @@
-package com.meetgom.backend.entity
+package com.meetgom.backend.entity.event_sheet
 
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import jakarta.persistence.*
