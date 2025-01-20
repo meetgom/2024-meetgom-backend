@@ -20,7 +20,7 @@ data class EventSheet(
     val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null,
     val manualActive: Boolean? = false,
     val createdAt: ZonedDateTime? = null,
-    val updatedAt: ZonedDateTime? = null,
+    val updatedAt: ZonedDateTime? = null
 ) {
     private fun isActive(): Boolean {
         val now = ZonedDateTime.now()
@@ -56,7 +56,7 @@ data class EventSheet(
             manualActive = this.manualActive,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            timeZone = timeZone
+            timeZone = timeZone,
         )
     }
 
@@ -75,7 +75,7 @@ data class EventSheet(
             activeEndDateTime = eventSheet.activeEndDateTime,
             manualActive = eventSheet.manualActive,
             hostTimeZoneEntity = eventSheet.hostTimeZone.toEntity(),
-            eventCode = eventSheet.eventCode.toEntity()
+            eventCode = eventSheet.eventCode.toEntity(),
         )
         val eventSheetTimeSlotEntities =
             eventSheet.eventSheetTimeSlots?.map { it.toEntity(eventSheetEntity = eventSheetEntity) }?.toMutableList()

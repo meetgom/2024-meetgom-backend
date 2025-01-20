@@ -9,6 +9,7 @@ import com.meetgom.backend.repository.EventSheetRepository
 import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository
 import com.meetgom.backend.repository.TimeZoneRepository
+import com.meetgom.backend.security.Security
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
@@ -36,11 +37,12 @@ class EventSheetService(
         activeEndDateTime: LocalDateTime?,
         manualActive: Boolean?,
         eventSheetTimeSlots: List<EventSheetTimeSlot>,
-        wordCount: Int
+        wordCount: Int,
+        pinCode: String,
     ): EventSheet {
         val hostTimeZone =
             timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw TimeZoneNotFoundException()
-        val eventCode = createEventSheetEventCode(wordCount = wordCount)
+        val eventCode = createEventSheetEventCode(pinCode = pinCode, wordCount = wordCount)
         val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
             eventCode = eventCode,
@@ -52,7 +54,7 @@ class EventSheetService(
             activeEndDateTime = activeEndDateTime?.atTimeZone(hostTimeZone),
             eventSheetTimeSlots = validEventSheetTimeSlots,
             manualActive = manualActive,
-            timeZone = hostTimeZone
+            timeZone = hostTimeZone,
         )
             .toEntity()
         val savedEventSheet = eventSheetRepository.save(eventSheetEntity)
@@ -63,7 +65,6 @@ class EventSheetService(
     fun readEventSheetByEventCode(
         eventCode: String,
         region: String?,
-        key: String?
     ): EventSheet {
         val eventSheet =
             eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw EventSheetNotFoundException()
@@ -80,14 +81,18 @@ class EventSheetService(
     }
 
     // MARK: - Private Functions
-    private fun createEventSheetEventCode(wordCount: Int): EventCode {
-        var eventCodeWords: List<EventCodeWordEntity> = listOf()
-        var newEventCode: String = ""
+    private fun createEventSheetEventCode(pinCode: String, wordCount: Int): EventCode {
         for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
-            eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
-            newEventCode = eventCodeWords.joinToString("-") { it.word }
-            if (!eventCodeRepository.existsByEventCode(newEventCode))
-                return EventCode(newEventCode)
+            val eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
+            val eventCode = eventCodeWords.joinToString(separator = "-") { it.word }
+            if (!eventCodeRepository.existsByEventCode(eventCode)) {
+                val securityPinCode = Security.encryptPinCode(eventCode, pinCode)
+                return EventCode(
+                    eventCode = eventCode,
+                    pinCode = securityPinCode.value,
+                    salt = securityPinCode.salt
+                )
+            }
         }
         throw MaxEventCodesReachedException()
     }

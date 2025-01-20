@@ -28,6 +28,7 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
             activeStartDateTime = postEventSheetRequest.activeStartDateTime,
             activeEndDateTime = postEventSheetRequest.activeEndDateTime,
             manualActive = postEventSheetRequest.manualActive,
+            pinCode = postEventSheetRequest.pinCode,
             eventSheetTimeSlots = postEventSheetRequest.eventSheetTimeSlots.map {
                 EventSheetTimeSlot(
                     date = it.date,
@@ -35,7 +36,7 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
                     endTime = TimeUtils.timeStringToLocalTime(it.endTime)
                 )
             },
-            wordCount = postEventSheetRequest.wordCount ?: 3
+            wordCount = postEventSheetRequest.wordCount ?: 3,
         )
         return HttpResponse.of(eventSheet.toResponse())
     }
@@ -60,12 +61,10 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
     fun getEventSheetByEventCode(
         @PathVariable eventCode: String,
         @RequestParam region: String?,
-        @RequestParam key: String?
     ): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.readEventSheetByEventCode(
             eventCode = eventCode,
             region = region,
-            key = key
         )
         return HttpResponse.of(eventSheet.toResponse())
     }

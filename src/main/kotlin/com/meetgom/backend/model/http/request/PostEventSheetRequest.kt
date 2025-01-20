@@ -40,7 +40,7 @@ data class PostEventSheetRequest(
         description = "이벤트 시트 접속 핀코드",
         nullable = true,
     )
-    val pinCode: String? = null,
+    val pinCode: String,
 
     @Schema(
         title = "Active Start Date",
@@ -105,7 +105,7 @@ data class PostSpecificDatesEventSheetRequest(
         description = "이벤트 시트 접속 핀코드",
         nullable = true,
     )
-    val pinCode: String? = null,
+    val pinCode: String,
 
     @Schema(
         title = "Active Start Date",
@@ -186,7 +186,8 @@ data class PostSpecificDatesEventSheetRequest(
             activeEndDateTime = activeEndDateTime,
             manualActive = manualActive,
             eventSheetTimeSlots = eventSheetTimeSlotsRequest,
-            wordCount = wordCount ?: 3
+            wordCount = wordCount ?: 3,
+            pinCode = pinCode
         )
     }
 }
@@ -216,7 +217,7 @@ data class PostRecurringWeekdaysEventSheetRequest(
         description = "이벤트 시트 접속 핀코드",
         nullable = true,
     )
-    val pinCode: String? = null,
+    val pinCode: String,
 
     @Schema(
         title = "Active Start Date",
@@ -300,7 +301,8 @@ data class PostRecurringWeekdaysEventSheetRequest(
             activeEndDateTime = this.activeEndDateTime,
             manualActive = this.manualActive,
             eventSheetTimeSlots = eventSheetTimeSlotsRequest,
-            wordCount = this.wordCount
+            wordCount = this.wordCount,
+            pinCode = pinCode
         )
     }
 }
