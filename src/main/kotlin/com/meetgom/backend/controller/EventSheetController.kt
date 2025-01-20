@@ -61,10 +61,12 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
     fun getEventSheetByEventCode(
         @PathVariable eventCode: String,
         @RequestParam region: String?,
+        @RequestParam pinCode: String?
     ): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.readEventSheetByEventCode(
             eventCode = eventCode,
             region = region,
+            pinCode = pinCode
         )
         return HttpResponse.of(eventSheet.toResponse())
     }

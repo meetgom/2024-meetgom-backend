@@ -1,6 +1,5 @@
 package com.meetgom.backend.service
 
-import com.meetgom.backend.entity.EventCodeWordEntity
 import com.meetgom.backend.exception.*
 import com.meetgom.backend.model.domain.EventSheet
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
@@ -9,6 +8,7 @@ import com.meetgom.backend.repository.EventSheetRepository
 import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository
 import com.meetgom.backend.repository.TimeZoneRepository
+import com.meetgom.backend.security.EventCodeSecurity
 import com.meetgom.backend.security.Security
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
@@ -65,18 +65,20 @@ class EventSheetService(
     fun readEventSheetByEventCode(
         eventCode: String,
         region: String?,
+        pinCode: String?
     ): EventSheet {
         val eventSheet =
             eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw EventSheetNotFoundException()
-
         val timeZone = region.let {
             if (it.isNullOrEmpty() || it == eventSheet.hostTimeZone.region) eventSheet.hostTimeZone
             else if (it == eventSheet.timeZone.region) eventSheet.timeZone
             else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw TimeZoneNotFoundException()
         }
-
+        if (pinCode != null) {
+            if (!EventCodeSecurity.checkPinCode(eventSheet.eventCode, pinCode))
+                throw InvalidPinCodeException()
+        }
         val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
-
         return convertedEventSheet
     }
 
@@ -84,14 +86,9 @@ class EventSheetService(
     private fun createEventSheetEventCode(pinCode: String, wordCount: Int): EventCode {
         for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
             val eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
-            val eventCode = eventCodeWords.joinToString(separator = "-") { it.word }
-            if (!eventCodeRepository.existsByEventCode(eventCode)) {
-                val securityPinCode = Security.encryptPinCode(eventCode, pinCode)
-                return EventCode(
-                    eventCode = eventCode,
-                    pinCode = securityPinCode.value,
-                    salt = securityPinCode.salt
-                )
+            val eventCodeValue = eventCodeWords.joinToString(separator = "-") { it.word }
+            if (!eventCodeRepository.existsByEventCode(eventCodeValue)) {
+                return EventCodeSecurity.generateEventCodeWithEncryptedPinCode(eventCodeValue, pinCode)
             }
         }
         throw MaxEventCodesReachedException()
