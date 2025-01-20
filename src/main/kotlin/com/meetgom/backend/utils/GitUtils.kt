@@ -8,8 +8,7 @@ class GitUtils {
                 val gitLogs: List<String> = process.inputStream.bufferedReader().readLines()
                 return gitLogs
             } catch (e: Exception) {
-                e.printStackTrace()
-                throw IllegalStateException("Error retrieving git log: " + e.message)
+                return listOf()
             }
         }
     }
