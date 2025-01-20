@@ -1,6 +1,7 @@
 package com.meetgom.backend.service
 
 import com.meetgom.backend.exception.*
+import com.meetgom.backend.exception.event_sheet.EventSheetExceptions
 import com.meetgom.backend.model.domain.EventSheet
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
 import com.meetgom.backend.model.domain.EventCode
@@ -9,7 +10,6 @@ import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository
 import com.meetgom.backend.repository.TimeZoneRepository
 import com.meetgom.backend.security.EventCodeSecurity
-import com.meetgom.backend.security.Security
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
@@ -41,7 +41,8 @@ class EventSheetService(
         pinCode: String,
     ): EventSheet {
         val hostTimeZone =
-            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain() ?: throw TimeZoneNotFoundException()
+            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain()
+                ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
         val eventCode = createEventSheetEventCode(pinCode = pinCode, wordCount = wordCount)
         val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
@@ -68,15 +69,13 @@ class EventSheetService(
         pinCode: String?
     ): EventSheet {
         val eventSheet =
-            eventSheetRepository.findByEventCode(eventCode)?.toDomain() ?: throw EventSheetNotFoundException()
+            eventSheetRepository.findByEventCode(eventCode)?.toDomain()
+                ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
         val timeZone = region.let {
             if (it.isNullOrEmpty() || it == eventSheet.hostTimeZone.region) eventSheet.hostTimeZone
             else if (it == eventSheet.timeZone.region) eventSheet.timeZone
-            else timeZoneRepository.findByRegion(it)?.toDomain() ?: throw TimeZoneNotFoundException()
-        }
-        if (pinCode != null) {
-            if (!EventCodeSecurity.checkPinCode(eventSheet.eventCode, pinCode))
-                throw InvalidPinCodeException()
+            else timeZoneRepository.findByRegion(it)?.toDomain()
+                ?: throw EventSheetExceptions.TIME_ZONE_NOT_FOUND.toException()
         }
         val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
         return convertedEventSheet
@@ -91,7 +90,7 @@ class EventSheetService(
                 return EventCodeSecurity.generateEventCodeWithEncryptedPinCode(eventCodeValue, pinCode)
             }
         }
-        throw MaxEventCodesReachedException()
+        throw EventSheetExceptions.MAX_EVENT_CODES_REACHED.toException()
     }
 
     private fun eventSheetTimeSlotsValidationCheck(
@@ -101,12 +100,12 @@ class EventSheetService(
         if (eventSheetType == EventSheetType.RECURRING_WEEKDAYS) {
             val dayOfWeeks = eventSheetTimeSlots.map { it.date.dayOfWeek }
             if (dayOfWeeks.distinct().size != dayOfWeeks.size)
-                throw InvalidDayOfWeeksException()
+                throw EventSheetExceptions.INVALID_DAY_OF_WEEKS.toException()
         }
         eventSheetTimeSlots.sorted()
             .forEach { eventSheetTimeSlot ->
                 if (eventSheetTimeSlot.startTime.isAfter(eventSheetTimeSlot.endTime))
-                    throw InvalidEventSheetTimeSlotsException()
+                    throw EventSheetExceptions.INVALID_EVENT_SHEET_TIME_SLOTS.toException()
             }
         return eventSheetTimeSlots
     }

@@ -1,4 +1,4 @@
-package com.meetgom.backend.http
+package com.meetgom.backend.exception.common
 
 import org.springframework.http.HttpStatus
 

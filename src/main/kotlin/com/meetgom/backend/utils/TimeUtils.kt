@@ -1,6 +1,6 @@
 package com.meetgom.backend.utils
 
-import com.meetgom.backend.exception.InvalidTimeFormatException
+import com.meetgom.backend.exception.common.CommonExceptions
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -16,7 +16,7 @@ class TimeUtils {
         ): LocalTime {
             val trimmedTimeString = timeString.trim()
             if (!timeRegex.matches(trimmedTimeString))
-                throw InvalidTimeFormatException()
+                throw CommonExceptions.INVALID_TIME_FORMAT.toException()
             if (trimmedTimeString == "24:00")
                 return LocalTime.MAX
             return LocalTime.parse(trimmedTimeString)

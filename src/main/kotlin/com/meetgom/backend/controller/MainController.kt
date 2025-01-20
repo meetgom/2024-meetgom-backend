@@ -1,6 +1,6 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.http.HttpResponse
+import com.meetgom.backend.model.http.HttpResponse
 import com.meetgom.backend.model.http.response.ServerStatusResponse
 import com.meetgom.backend.utils.listener.ApplicationStartedEventListener
 import com.meetgom.backend.utils.GitUtils
