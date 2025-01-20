@@ -1,6 +1,7 @@
 package com.meetgom.backend.controller
 
 import com.meetgom.backend.model.domain.EventSheetTimeSlot
+import com.meetgom.backend.http.HttpResponse
 import com.meetgom.backend.model.http.request.PostEventSheetRequest
 import com.meetgom.backend.model.http.request.PostRecurringWeekdaysEventSheetRequest
 import com.meetgom.backend.model.http.request.PostSpecificDatesEventSheetRequest
@@ -15,9 +16,10 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping(path = ["/v1/event-sheet"])
 class EventSheetController(private val eventSheetService: EventSheetService) {
+
     @PostMapping(path = [""])
     @Operation(summary = "create Event Sheet")
-    fun postEventSheet(@RequestBody postEventSheetRequest: PostEventSheetRequest): EventSheetResponse {
+    fun postEventSheet(@RequestBody postEventSheetRequest: PostEventSheetRequest): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.createEventSheet(
             name = postEventSheetRequest.name,
             description = postEventSheetRequest.description,
@@ -35,12 +37,12 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
             },
             wordCount = postEventSheetRequest.wordCount ?: 3
         )
-        return eventSheet.toResponse()
+        return HttpResponse.of(eventSheet.toResponse())
     }
 
     @PostMapping(path = ["specific-dates"])
     @Operation(summary = "create Specific Dates Event Sheet")
-    fun postSpecificDatesEventSheet(@RequestBody postSpecificDatesEventSheetRequest: PostSpecificDatesEventSheetRequest): EventSheetResponse {
+    fun postSpecificDatesEventSheet(@RequestBody postSpecificDatesEventSheetRequest: PostSpecificDatesEventSheetRequest): HttpResponse<EventSheetResponse> {
         val postEventSheetRequest = postSpecificDatesEventSheetRequest.toPostEventSheetRequest()
         return postEventSheet(postEventSheetRequest)
     }
@@ -48,7 +50,7 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
     // MARK: - 이벤트 타입에 따른 이벤트 시트 생성
     @PostMapping(path = ["recurring-weekdays"])
     @Operation(summary = "create Recurring Weekdays Event Sheet")
-    fun postRecurringWeekdaysEventSheet(@RequestBody postRecurringWeekdaysEventSheetRequest: PostRecurringWeekdaysEventSheetRequest): EventSheetResponse {
+    fun postRecurringWeekdaysEventSheet(@RequestBody postRecurringWeekdaysEventSheetRequest: PostRecurringWeekdaysEventSheetRequest): HttpResponse<EventSheetResponse> {
         val postEventSheetRequest = postRecurringWeekdaysEventSheetRequest.toPostEventSheetRequest()
         return postEventSheet(postEventSheetRequest)
     }
@@ -59,12 +61,12 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
         @PathVariable eventCode: String,
         @RequestParam region: String?,
         @RequestParam key: String?
-    ): EventSheetResponse {
+    ): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.readEventSheetByEventCode(
             eventCode = eventCode,
             region = region,
             key = key
         )
-        return eventSheet.toResponse()
+        return HttpResponse.of(eventSheet.toResponse())
     }
 }

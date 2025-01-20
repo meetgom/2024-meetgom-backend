@@ -150,7 +150,8 @@ data class PostSpecificDatesEventSheetRequest(
 
     @Schema(
         title = "Specific Date's Start Time",
-        description = "이벤트 시트 특정 날짜들의 시작 시간"
+        description = "이벤트 시트 특정 날짜들의 시작 시간",
+        defaultValue = "00:00"
     )
     @Pattern(
         regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
@@ -241,7 +242,6 @@ data class PostRecurringWeekdaysEventSheetRequest(
     )
     val manualActive: Boolean?,
 
-    @Size(min = 1, max = 100)
     @Schema(
         title = "Word Count",
         description = "이벤트 시트 코드 단어 수",
@@ -249,6 +249,7 @@ data class PostRecurringWeekdaysEventSheetRequest(
         defaultValue = "3",
         hidden = true
     )
+    @Size(min = 1, max = 100)
     val wordCount: Int?,
 
     // MARK: - Event Sheet Time Slots를 위한 Recurring Weekdays 설정
@@ -273,7 +274,7 @@ data class PostRecurringWeekdaysEventSheetRequest(
     @Schema(
         title = "Recurring Weekday's End Time",
         description = "이벤트 시트 주기적인 요일들의 종료 시간",
-        defaultValue = "23:59"
+        defaultValue = "24:00"
     )
     @Pattern(
         regexp = "^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$",
