@@ -41,7 +41,7 @@ class SecurityConfig(
 
         // White List 목록
         val permitAllWhiteList: List<MvcRequestMatcher> = listOf(
-            mvc.pattern("/v1/**")
+            mvc.pattern("/**")
         )
 //
         http
