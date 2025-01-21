@@ -6,8 +6,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
 @Entity
-class StandardUserEntity(
+class AnonymousUserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long? = null
 )
