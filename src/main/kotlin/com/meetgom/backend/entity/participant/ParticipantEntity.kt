@@ -18,6 +18,8 @@ class ParticipantEntity(
     @JoinColumn(name = "user_id")
     val user: UserEntity,
 
-    @Column(name = "role")
-    val role: String,
+
+    @OneToOne
+    @JoinColumn(name = "role")
+    val role: RoleEntity,
 )
