@@ -15,8 +15,7 @@ class StandardUserEntity(
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "user_id",
-        referencedColumnName = "id",
-        nullable = false
+        referencedColumnName = "id"
     )
     var user: UserEntity,
 

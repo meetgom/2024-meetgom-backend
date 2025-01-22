@@ -8,7 +8,6 @@ import com.meetgom.backend.repository.EventSheetRepository
 import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository
 import com.meetgom.backend.repository.TimeZoneRepository
-import com.meetgom.backend.security.EventCodeSecurity
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
@@ -42,7 +41,8 @@ class EventSheetService(
         val hostTimeZone =
             timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain()
                 ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
-        val eventCode = createEventSheetEventCode(pinCode = pinCode, wordCount = wordCount)
+        val eventCode = createEventSheetEventCode(wordCount = wordCount)
+        // FIXME: - IF PIN CODE IS NOT NULL AND NOT USER, CREATE ANONYMOUS USER
         val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
             eventCode = eventCode,
@@ -81,12 +81,12 @@ class EventSheetService(
     }
 
     // MARK: - Private Functions
-    private fun createEventSheetEventCode(pinCode: String, wordCount: Int): EventCode {
+    private fun createEventSheetEventCode(wordCount: Int): EventCode {
         for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
             val eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
             val eventCodeValue = eventCodeWords.joinToString(separator = "-") { it.word }
             if (!eventCodeRepository.existsByEventCode(eventCodeValue)) {
-                return EventCodeSecurity.generateEventCodeWithEncryptedPinCode(eventCodeValue, pinCode)
+                return EventCode(eventCode = eventCodeValue)
             }
         }
         throw EventSheetExceptions.MAX_EVENT_CODES_REACHED.toException()
