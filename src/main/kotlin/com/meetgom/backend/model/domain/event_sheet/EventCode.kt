@@ -1,4 +1,4 @@
-package com.meetgom.backend.model.domain
+package com.meetgom.backend.model.domain.event_sheet
 
 import com.meetgom.backend.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.entity.event_sheet.EventCodeEntity

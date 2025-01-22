@@ -1,6 +1,6 @@
 package com.meetgom.backend.entity.common
 
-import com.meetgom.backend.model.domain.TimeZone
+import com.meetgom.backend.model.domain.common.TimeZone
 import jakarta.persistence.*
 
 

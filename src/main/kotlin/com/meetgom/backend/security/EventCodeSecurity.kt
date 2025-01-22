@@ -1,6 +1,6 @@
 package com.meetgom.backend.security
 
-import com.meetgom.backend.model.domain.EventCode
+import com.meetgom.backend.model.domain.event_sheet.EventCode
 import com.meetgom.backend.security.Encrypt.Security
 import com.meetgom.backend.security.Encrypt.Security.Companion.encryptSha256
 

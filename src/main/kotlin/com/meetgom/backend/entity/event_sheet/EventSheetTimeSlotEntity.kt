@@ -1,6 +1,6 @@
 package com.meetgom.backend.entity.event_sheet
 
-import com.meetgom.backend.model.domain.EventSheetTimeSlot
+import com.meetgom.backend.model.domain.event_sheet.EventSheetTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
 import java.time.LocalDate

@@ -1,4 +1,4 @@
-package com.meetgom.backend.model.domain
+package com.meetgom.backend.model.domain.common
 
 import com.meetgom.backend.entity.common.TimeZoneEntity
 import java.time.ZoneId

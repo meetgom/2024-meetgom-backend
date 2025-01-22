@@ -1,6 +1,6 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.domain.EventSheetTimeSlot
+import com.meetgom.backend.model.domain.event_sheet.EventSheetTimeSlot
 import com.meetgom.backend.model.http.HttpResponse
 import com.meetgom.backend.model.http.request.PostEventSheetRequest
 import com.meetgom.backend.model.http.request.PostRecurringWeekdaysEventSheetRequest

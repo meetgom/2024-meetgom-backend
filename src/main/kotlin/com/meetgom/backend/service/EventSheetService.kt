@@ -1,9 +1,9 @@
 package com.meetgom.backend.service
 
 import com.meetgom.backend.exception.exceptions.EventSheetExceptions
-import com.meetgom.backend.model.domain.EventSheet
-import com.meetgom.backend.model.domain.EventSheetTimeSlot
-import com.meetgom.backend.model.domain.EventCode
+import com.meetgom.backend.model.domain.event_sheet.EventSheet
+import com.meetgom.backend.model.domain.event_sheet.EventSheetTimeSlot
+import com.meetgom.backend.model.domain.event_sheet.EventCode
 import com.meetgom.backend.repository.EventSheetRepository
 import com.meetgom.backend.repository.EventCodeRepository
 import com.meetgom.backend.repository.EventCodeWordRepository

@@ -1,7 +1,7 @@
 package com.meetgom.backend.entity.event_sheet
 
 import com.meetgom.backend.entity.common.TimeZoneEntity
-import com.meetgom.backend.model.domain.EventSheet
+import com.meetgom.backend.model.domain.event_sheet.EventSheet
 import com.meetgom.backend.type.EventSheetType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp

@@ -1,6 +1,6 @@
 package com.meetgom.backend.entity.event_sheet
 
-import com.meetgom.backend.model.domain.EventCode
+import com.meetgom.backend.model.domain.event_sheet.EventCode
 import jakarta.persistence.*
 
 
