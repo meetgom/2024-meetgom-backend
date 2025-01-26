@@ -31,34 +31,28 @@ class EventSheetEntity(
     @JoinColumn(name = "event_code")
     val eventCode: EventCodeEntity,
 
-    // Host TimeZone
     @ManyToOne
     @JoinColumn(name = "host_time_zone_id")
     val hostTimeZoneEntity: TimeZoneEntity,
 
-    // Host TimeZone 기준
     @Column(name = "active_start_date_time")
     val activeStartDateTime: ZonedDateTime?,
 
-    // Host TimeZone 기준
     @Column(name = "active_end_date_time")
     val activeEndDateTime: ZonedDateTime?,
 
-    // Host TimeZone 기준
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.EAGER
     )
     @JoinColumn(name = "event_sheet_id")
-    var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>? = null,
+    var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>,
 
-    // Server 기준
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: ZonedDateTime? = null,
 
-    // Server 기준
     @CreationTimestamp
     @Column(name = "created_at")
     val createdAt: ZonedDateTime? = null,
@@ -80,7 +74,7 @@ class EventSheetEntity(
             timeZone = this.hostTimeZoneEntity.toDomain(),
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventCode = eventCode.toDomain(),
-            eventSheetTimeSlots = this.eventSheetTimeSlotEntities?.map { it.toDomain() } ?: listOf()
+            eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() }
         )
     }
 }

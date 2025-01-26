@@ -2,6 +2,7 @@ package com.meetgom.backend.model.domain.event_sheet
 
 import com.meetgom.backend.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.model.domain.common.TimeZone
+import com.meetgom.backend.model.domain.participant.Participant
 import com.meetgom.backend.model.http.response.EventSheetResponse
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.alignTimeSlots
@@ -18,7 +19,7 @@ data class EventSheet(
     val activeStartDateTime: ZonedDateTime?,
     val activeEndDateTime: ZonedDateTime?,
     val timeZone: TimeZone,
-    val eventSheetTimeSlots: List<EventSheetTimeSlot>? = null,
+    val eventSheetTimeSlots: List<EventSheetTimeSlot>,
     val manualActive: Boolean? = false,
     val createdAt: ZonedDateTime? = null,
     val updatedAt: ZonedDateTime? = null
@@ -37,12 +38,12 @@ data class EventSheet(
         val timeZone = to ?: hostTimeZone
         val activeStartDateTime = this.activeStartDateTime?.toTimeZone(timeZone)
         val activeEndDateTime = this.activeEndDateTime?.toTimeZone(timeZone)
-        val eventSheetTimeSlots = this.eventSheetTimeSlots?.map {
+        val eventSheetTimeSlots = this.eventSheetTimeSlots.map {
             it.convertTimeZone(
                 from = this.timeZone,
                 to = timeZone,
             )
-        }?.flatten()?.alignTimeSlots()
+        }.flatten().alignTimeSlots()
 
         return EventSheet(
             id = this.id,
@@ -77,10 +78,10 @@ data class EventSheet(
             manualActive = eventSheet.manualActive,
             hostTimeZoneEntity = eventSheet.hostTimeZone.toEntity(),
             eventCode = eventSheet.eventCode.toEntity(),
+            eventSheetTimeSlotEntities = mutableListOf(),
         )
         val eventSheetTimeSlotEntities =
-            eventSheet.eventSheetTimeSlots?.map { it.toEntity(eventSheetEntity = eventSheetEntity) }?.toMutableList()
-                ?: mutableListOf()
+            eventSheet.eventSheetTimeSlots.map { it.toEntity(eventSheetEntity = eventSheetEntity) }.toMutableList()
         eventSheetEntity.eventSheetTimeSlotEntities = eventSheetTimeSlotEntities
         return eventSheetEntity
     }
@@ -97,8 +98,7 @@ data class EventSheet(
             activeEndDateTime = this.activeEndDateTime?.toLocalDateTime(),
             manualActive = this.manualActive,
             isActive = this.isActive(),
-            eventSheetTimeSlots = this.eventSheetTimeSlots?.map { it.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS) }
-                ?: listOf(),
+            eventSheetTimeSlots = this.eventSheetTimeSlots.map { it.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS) },
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             timeZone = this.timeZone.region

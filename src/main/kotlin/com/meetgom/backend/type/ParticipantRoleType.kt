@@ -1,6 +1,6 @@
 package com.meetgom.backend.type
 
-enum class RoleType {
+enum class ParticipantRoleType {
     ADMIN,
     HOST,
     MODERATOR,

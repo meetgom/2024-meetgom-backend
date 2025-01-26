@@ -1,6 +1,6 @@
 package com.meetgom.backend.type
 
-enum class RolePermissionType {
+enum class ParticipantRolePermissionType {
     ALL,
     EVENT_SHEET_DELETE,
     EVENT_SHEET_RESTRICTED_EDIT,
