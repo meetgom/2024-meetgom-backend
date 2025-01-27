@@ -1,6 +1,6 @@
 package com.meetgom.backend.exception.common
 
-import com.meetgom.backend.model.http.HttpResponse
+import com.meetgom.backend.controller.http.HttpResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler

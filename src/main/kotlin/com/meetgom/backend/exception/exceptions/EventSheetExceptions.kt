@@ -13,6 +13,6 @@ enum class EventSheetExceptions(
     INVALID_EVENT_SHEET_TIME_SLOTS(MGExceptionStatus.BAD_REQUEST, "잘못된 시간 슬롯 형식입니다."),
     INVALID_DAY_OF_WEEKS(MGExceptionStatus.BAD_REQUEST, "잘못된 요일 형식입니다."),
     UNMATCHED_EVENT_CODE(MGExceptionStatus.BAD_REQUEST, "이벤트 코드가 일치하지 않습니다."),
-    UNMATCHED_USER(MGExceptionStatus.BAD_REQUEST, "유저가 일치하지 않습니다."),
     UNMATCHED_ROLE_TYPE(MGExceptionStatus.BAD_REQUEST, "역할 타입이 일치하지 않습니다."),
+    PARTICIPANT_ROLE_NOT_FOUND(MGExceptionStatus.NOT_FOUND, "참가자 역할을 찾을 수 없습니다."),
 }

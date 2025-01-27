@@ -1,9 +1,9 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.http.HttpResponse
-import com.meetgom.backend.model.http.request.PostStandardUserRequest
-import com.meetgom.backend.model.http.response.UserResponse
-import com.meetgom.backend.service.UserService
+import com.meetgom.backend.controller.http.HttpResponse
+import com.meetgom.backend.controller.http.request.PostStandardUserRequest
+import com.meetgom.backend.controller.http.response.UserResponse
+import com.meetgom.backend.domain.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/v1/auth"])
 class AuthController(private val userService: UserService) {
-    @PostMapping("/sign-up")
+    @PostMapping("/sign-up/standard")
     @Operation(summary = "create standard user")
-    fun postStandardSignUp(@RequestBody postStandardUserRequest: PostStandardUserRequest): HttpResponse<UserResponse> {
+    fun postSignUpStandard(@RequestBody postStandardUserRequest: PostStandardUserRequest): HttpResponse<UserResponse> {
         val user = userService.createStandardUser(
-            displayName = postStandardUserRequest.displayName,
+            userName = postStandardUserRequest.displayName,
             email = postStandardUserRequest.email,
             password = postStandardUserRequest.password
         )

@@ -1,7 +1,6 @@
 package com.meetgom.backend.utils.extends
 
-import com.meetgom.backend.model.domain.event_sheet.EventSheetTimeSlot
-import com.meetgom.backend.model.domain.participant.ParticipantAvailableTimeSlot
+import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
 import java.time.temporal.ChronoUnit
 
 fun List<ParticipantAvailableTimeSlot>.alignTimeSlots(): List<ParticipantAvailableTimeSlot> {

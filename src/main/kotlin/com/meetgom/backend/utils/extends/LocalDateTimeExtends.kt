@@ -1,6 +1,6 @@
 package com.meetgom.backend.utils.extends
 
-import com.meetgom.backend.model.domain.common.TimeZone
+import com.meetgom.backend.domain.model.common.TimeZone
 import java.time.*
 
 fun LocalDateTime.atTimeZone(timeZone: TimeZone): ZonedDateTime {

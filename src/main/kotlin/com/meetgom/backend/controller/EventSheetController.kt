@@ -1,12 +1,12 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.domain.event_sheet.EventSheetTimeSlot
-import com.meetgom.backend.model.http.HttpResponse
-import com.meetgom.backend.model.http.request.PostEventSheetRequest
-import com.meetgom.backend.model.http.request.PostRecurringWeekdaysEventSheetRequest
-import com.meetgom.backend.model.http.request.PostSpecificDatesEventSheetRequest
-import com.meetgom.backend.model.http.response.EventSheetResponse
-import com.meetgom.backend.service.EventSheetService
+import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
+import com.meetgom.backend.controller.http.HttpResponse
+import com.meetgom.backend.controller.http.request.PostEventSheetRequest
+import com.meetgom.backend.controller.http.request.PostRecurringWeekdaysEventSheetRequest
+import com.meetgom.backend.controller.http.request.PostSpecificDatesEventSheetRequest
+import com.meetgom.backend.controller.http.response.EventSheetResponse
+import com.meetgom.backend.domain.service.EventSheetService
 import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

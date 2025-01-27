@@ -1,11 +1,5 @@
 package com.meetgom.backend.security.service
 
-import com.meetgom.backend.entity.participant.ParticipantEntity
-import com.meetgom.backend.model.domain.participant.Participant
-import lombok.Getter
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-
 /*
 @Getter
 class ParticipantDetailsImpl(
