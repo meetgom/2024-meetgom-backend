@@ -16,10 +16,11 @@ class UtilController(
 ) {
     @GetMapping("/time-zones")
     fun getTimeZones(
-        @RequestParam search: String?
+        @RequestParam keyword: String?
     ): TimeZoneResponse {
+        val timeZoneRegions = utilService.readTimeZoneByKeyword(keyword = keyword).map { it.region }
         return TimeZoneResponse(
-            timeZones = utilService.readActiveTimeZones(search = search)
+            timeZones = timeZoneRegions
         )
     }
 }

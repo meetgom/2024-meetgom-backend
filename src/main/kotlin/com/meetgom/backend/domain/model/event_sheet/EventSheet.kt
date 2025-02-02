@@ -10,7 +10,7 @@ import java.time.ZonedDateTime
 
 data class EventSheet(
     val id: Long? = null,
-    val eventCode: EventCode,
+    val eventSheetCode: EventSheetCode,
     val name: String,
     val description: String?,
     val eventSheetType: EventSheetType,
@@ -46,7 +46,7 @@ data class EventSheet(
 
         return EventSheet(
             id = this.id,
-            eventCode = this.eventCode,
+            eventSheetCode = this.eventSheetCode,
             name = this.name,
             description = this.description,
             eventSheetType = this.eventSheetType,
@@ -65,6 +65,14 @@ data class EventSheet(
         return this.convertTimeZone(TimeZone.defaultTimeZone)
     }
 
+    fun getMatchedTimeZone(region: String?): TimeZone? {
+        return when(region) {
+            this.hostTimeZone.region -> this.hostTimeZone
+            this.timeZone.region -> this.timeZone
+            else -> null
+        }
+    }
+
     // MARK: - Converters
     fun toEntity(): EventSheetEntity {
         val eventSheet = this.convertSystemDefaultTimeZone()
@@ -76,7 +84,7 @@ data class EventSheet(
             activeEndDateTime = eventSheet.activeEndDateTime,
             manualActive = eventSheet.manualActive,
             hostTimeZoneEntity = eventSheet.hostTimeZone.toEntity(),
-            eventCode = eventSheet.eventCode.toEntity(),
+            eventCodeEntity = eventSheet.eventSheetCode.toEntity(),
             eventSheetTimeSlotEntities = mutableListOf(),
         )
         val eventSheetTimeSlotEntities =
@@ -88,7 +96,7 @@ data class EventSheet(
     fun toResponse(): EventSheetResponse {
         return EventSheetResponse(
             id = this.id,
-            eventCode = this.eventCode.eventCode,
+            eventCode = this.eventSheetCode.eventCode,
             name = this.name,
             description = this.description,
             eventSheetType = this.eventSheetType,

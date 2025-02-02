@@ -19,7 +19,7 @@ class AuthController(private val userService: UserService) {
     @Operation(summary = "create standard user")
     fun postSignUpStandard(@RequestBody postStandardUserRequest: PostStandardUserRequest): HttpResponse<UserResponse> {
         val user = userService.createStandardUser(
-            userName = postStandardUserRequest.displayName,
+            userName = postStandardUserRequest.userName,
             email = postStandardUserRequest.email,
             password = postStandardUserRequest.password
         )

@@ -28,3 +28,13 @@ class TimeZoneEntity(
         )
     }
 }
+
+fun TimeZone.toEntity(): TimeZoneEntity {
+    return TimeZoneEntity(
+        region = this.region,
+        offset = this.offset,
+        gmtOffset = this.gmtOffset,
+        active = this.active
+    )
+}
+

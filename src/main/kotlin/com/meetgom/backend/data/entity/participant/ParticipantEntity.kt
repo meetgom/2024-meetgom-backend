@@ -1,5 +1,6 @@
 package com.meetgom.backend.data.entity.participant
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.data.entity.user.UserEntity
@@ -14,13 +15,14 @@ class ParticipantEntity(
 
     @ManyToOne
     @JoinColumn(name = "event_sheet_id")
-    val eventSheet: EventSheetEntity,
+    @JsonIgnore
+    val eventSheetEntity: EventSheetEntity,
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     val user: UserEntity,
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "participant_role")
     val role: ParticipantRoleEntity,
 
@@ -38,7 +40,7 @@ class ParticipantEntity(
 ) {
     fun toDomain(): Participant {
         return Participant(
-            eventSheetCode = this.eventSheet.eventCode.eventCode,
+            eventSheetCode = this.eventSheetEntity.eventCodeEntity.eventCode,
             user = user.toDomain(),
             role = role.participantRole,
             timeZone = timeZoneEntity.toDomain(),

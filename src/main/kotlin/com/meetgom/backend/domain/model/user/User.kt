@@ -20,9 +20,10 @@ data class User(
     fun toEntity(): UserEntity {
         return when (userType) {
             UserType.STANDARD -> {
-                val email = email ?: throw AuthExceptions.NEED_EMAIL_ARGUMENT.toException()
-                val password = password ?: throw AuthExceptions.NEED_PASSWORD_ARGUMENT.toException()
+                val email = email ?: throw AuthExceptions.REQUIRED_EMAIL_ARGUMENT.toException()
+                val password = password ?: throw AuthExceptions.REQUIRED_PASSWORD_ARGUMENT.toException()
                 val userEntity = UserEntity(
+                    id = id,
                     userName = userName,
                     userType = userType,
                 )
@@ -36,8 +37,9 @@ data class User(
             }
 
             UserType.ANONYMOUS -> {
-                val password = password ?: throw AuthExceptions.NEED_PASSWORD_ARGUMENT.toException()
+                val password = password ?: throw AuthExceptions.REQUIRED_PASSWORD_ARGUMENT.toException()
                 val userEntity = UserEntity(
+                    id = id,
                     userName = userName,
                     userType = userType,
                 )

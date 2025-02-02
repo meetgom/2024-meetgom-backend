@@ -1,6 +1,6 @@
 package com.meetgom.backend.data.entity.event_sheet
 
-import com.meetgom.backend.domain.model.event_sheet.EventCode
+import com.meetgom.backend.domain.model.event_sheet.EventSheetCode
 import jakarta.persistence.*
 
 
@@ -9,15 +9,9 @@ class EventCodeEntity(
     @Id
     @Column(name = "event_code", length = 256)
     val eventCode: String,
-
-    @OneToOne(
-        mappedBy = "eventCode",
-        cascade = [CascadeType.ALL]
-    )
-    val eventSheetEntity: EventSheetEntity? = null,
 ) {
-    fun toDomain(): EventCode {
-        return EventCode(
+    fun toDomain(): EventSheetCode {
+        return EventSheetCode(
             eventCode = this.eventCode,
         )
     }

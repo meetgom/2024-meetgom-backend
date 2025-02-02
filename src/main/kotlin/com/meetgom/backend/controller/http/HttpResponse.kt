@@ -1,6 +1,6 @@
 package com.meetgom.backend.controller.http
 
-import com.meetgom.backend.global.exception.common.HttpException
+import com.meetgom.backend.exception.common.HttpException
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class HttpResponse<T>(

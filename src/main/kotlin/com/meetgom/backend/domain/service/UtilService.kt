@@ -1,12 +1,14 @@
 package com.meetgom.backend.domain.service
 
 import com.meetgom.backend.data.repository.TimeZoneRepository
+import com.meetgom.backend.domain.model.common.TimeZone
 import org.springframework.stereotype.Service
 
 @Service
 class UtilService(
     private val timeZoneRepository: TimeZoneRepository
 ) {
-    fun readActiveTimeZones(search: String?) =
-        timeZoneRepository.findActiveTimeZones(search = search).map { it.toDomain().region }
+    fun readTimeZoneByKeyword(keyword: String?): List<TimeZone> {
+        return timeZoneRepository.findByKeyword(keyword).map { it.toDomain() }
+    }
 }

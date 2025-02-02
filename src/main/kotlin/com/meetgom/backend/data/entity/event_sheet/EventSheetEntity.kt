@@ -29,7 +29,7 @@ class EventSheetEntity(
         fetch = FetchType.LAZY
     )
     @JoinColumn(name = "event_code")
-    val eventCode: EventCodeEntity,
+    val eventCodeEntity: EventCodeEntity,
 
     @ManyToOne
     @JoinColumn(name = "host_time_zone_id")
@@ -44,7 +44,7 @@ class EventSheetEntity(
     @OneToMany(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
-        fetch = FetchType.EAGER
+        fetch = FetchType.LAZY
     )
     @JoinColumn(name = "event_sheet_id")
     var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>,
@@ -73,7 +73,7 @@ class EventSheetEntity(
             manualActive = this.manualActive,
             timeZone = this.hostTimeZoneEntity.toDomain(),
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
-            eventCode = eventCode.toDomain(),
+            eventSheetCode = eventCodeEntity.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() }
         )
     }

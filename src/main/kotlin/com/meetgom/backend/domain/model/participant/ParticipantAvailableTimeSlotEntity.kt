@@ -1,9 +1,11 @@
 package com.meetgom.backend.domain.model.participant
 
+import com.meetgom.backend.controller.http.response.ParticipantAvailableTimeSlotResponse
 import com.meetgom.backend.data.entity.participant.ParticipantAvailableTimeSlotEntity
 import com.meetgom.backend.data.entity.participant.ParticipantAvailableTimeSlotPrimaryKey
 import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.domain.model.common.TimeZone
+import com.meetgom.backend.utils.TimeUtils
 import com.meetgom.backend.utils.extends.changeWithTimeZone
 import com.meetgom.backend.utils.extends.untilDays
 import java.time.LocalDate
@@ -50,6 +52,15 @@ data class ParticipantAvailableTimeSlot(
             ),
             endTime = this.endTime,
             participantEntity = participantEntity
+        )
+    }
+
+    fun toResponse(hideDate: Boolean = false): ParticipantAvailableTimeSlotResponse {
+        return ParticipantAvailableTimeSlotResponse(
+            date = if (!hideDate) this.date else null,
+            dayOfWeek = this.date.dayOfWeek.name,
+            startTime = TimeUtils.localTimeToTimeString(this.startTime),
+            endTime = TimeUtils.localTimeToTimeString(this.endTime)
         )
     }
 }

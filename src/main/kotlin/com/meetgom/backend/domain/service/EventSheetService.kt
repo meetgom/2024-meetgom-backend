@@ -1,26 +1,28 @@
 package com.meetgom.backend.domain.service
 
+import com.meetgom.backend.data.repository.EventCodeWordRepository
+import com.meetgom.backend.data.repository.EventSheetCodeRepository
+import com.meetgom.backend.data.repository.EventSheetRepository
 import com.meetgom.backend.exception.exceptions.EventSheetExceptions
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
+import com.meetgom.backend.domain.model.event_sheet.EventSheetCode
 import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
-import com.meetgom.backend.domain.model.event_sheet.EventCode
-import com.meetgom.backend.data.repository.EventSheetRepository
-import com.meetgom.backend.data.repository.EventCodeRepository
-import com.meetgom.backend.data.repository.EventCodeWordRepository
-import com.meetgom.backend.data.repository.TimeZoneRepository
+import com.meetgom.backend.domain.service.common.CommonEventSheetService
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
 class EventSheetService(
-    private val eventCodeRepository: EventCodeRepository,
-    private val eventCodeWordRepository: EventCodeWordRepository,
+    private val commonEventSheetService: CommonEventSheetService,
     private val eventSheetRepository: EventSheetRepository,
-    private val timeZoneRepository: TimeZoneRepository
+    private val eventSheetCodeRepository: EventSheetCodeRepository,
+    private val eventSheetCodeWordRepository: EventCodeWordRepository
 ) {
+
     companion object {
         const val EVENT_CODE_MAX_TRY_COUNT = 1000
     }
@@ -39,13 +41,11 @@ class EventSheetService(
         pinCode: String,
     ): EventSheet {
         val hostTimeZone =
-            timeZoneRepository.findByRegion(hostTimeZoneRegion)?.toDomain()
-                ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
-        val eventCode = createEventSheetEventCode(wordCount = wordCount)
-        // FIXME: - IF PIN CODE IS NOT NULL AND NOT USER, CREATE ANONYMOUS USER
-        val validEventSheetTimeSlots = eventSheetTimeSlotsValidationCheck(eventSheetType, eventSheetTimeSlots)
-        val eventSheetEntity = EventSheet(
-            eventCode = eventCode,
+            commonEventSheetService.findTimeZoneEntityByRegionWithException(hostTimeZoneRegion).toDomain()
+        val eventCode = createRandomEventSheetCode(wordCount = wordCount)
+        val validEventSheetTimeSlots = validateEventSheetTimeSlots(eventSheetType, eventSheetTimeSlots)
+        val eventSheet = EventSheet(
+            eventSheetCode = eventCode,
             name = name,
             description = description,
             eventSheetType = eventSheetType,
@@ -55,44 +55,36 @@ class EventSheetService(
             eventSheetTimeSlots = validEventSheetTimeSlots,
             manualActive = manualActive,
             timeZone = hostTimeZone,
-        )
-            .toEntity()
-        val savedEventSheet = eventSheetRepository.save(eventSheetEntity)
-            .toDomain()
-        return savedEventSheet
+        ).toEntity()
+        return eventSheetRepository.save(eventSheet).toDomain()
     }
 
     fun readEventSheetByEventCode(
-        eventCode: String,
+        eventSheetCode: String,
         region: String?,
-        pinCode: String?
     ): EventSheet {
         val eventSheet =
-            eventSheetRepository.findByEventCode(eventCode)?.toDomain()
-                ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
-        val timeZone = region.let {
-            if (it.isNullOrEmpty() || it == eventSheet.hostTimeZone.region) eventSheet.hostTimeZone
-            else if (it == eventSheet.timeZone.region) eventSheet.timeZone
-            else timeZoneRepository.findByRegion(it)?.toDomain()
-                ?: throw EventSheetExceptions.TIME_ZONE_NOT_FOUND.toException()
-        }
-        val convertedEventSheet = eventSheet.convertTimeZone(timeZone)
+            commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
+                .toDomain()
+        val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
         return convertedEventSheet
     }
 
-    // MARK: - Private Functions
-    private fun createEventSheetEventCode(wordCount: Int): EventCode {
+    // MARK: - Private Methods
+    private fun createRandomEventSheetCode(wordCount: Int = 3): EventSheetCode {
         for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
-            val eventCodeWords = eventCodeWordRepository.getRandomEventCodeWords(wordCount = wordCount)
+            val eventCodeWords = eventSheetCodeWordRepository.findRandomEventCodeWords(wordCount = wordCount)
             val eventCodeValue = eventCodeWords.joinToString(separator = "-") { it.word }
-            if (!eventCodeRepository.existsByEventCode(eventCodeValue)) {
-                return EventCode(eventCode = eventCodeValue)
+            if (eventSheetCodeRepository.findByEventSheetCode(eventCodeValue) == null) {
+                return EventSheetCode(
+                    eventCode = eventCodeValue
+                )
             }
         }
         throw EventSheetExceptions.MAX_EVENT_CODES_REACHED.toException()
     }
 
-    private fun eventSheetTimeSlotsValidationCheck(
+    private fun validateEventSheetTimeSlots(
         eventSheetType: EventSheetType,
         eventSheetTimeSlots: List<EventSheetTimeSlot>
     ): List<EventSheetTimeSlot> {

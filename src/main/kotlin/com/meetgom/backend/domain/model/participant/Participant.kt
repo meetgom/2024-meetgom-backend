@@ -1,5 +1,6 @@
 package com.meetgom.backend.domain.model.participant
 
+import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.data.entity.participant.ParticipantRoleEntity
@@ -46,19 +47,32 @@ data class Participant(
         participantRoleEntity: ParticipantRoleEntity
     ): ParticipantEntity {
         val participant = this.convertSystemDefaultTimeZone()
-        if (eventSheetEntity.eventCode.eventCode != participant.eventSheetCode)
-            throw EventSheetExceptions.UNMATCHED_EVENT_CODE.toException()
+        if (eventSheetEntity.eventCodeEntity.eventCode != participant.eventSheetCode)
+            throw EventSheetExceptions.UNMATCHED_EVENT_SHEET_CODE.toException()
         if (userEntity.id != participant.user.id)
             throw AuthExceptions.UNMATCHED_USER.toException()
         if (participantRoleEntity.participantRole !== participant.role)
             throw EventSheetExceptions.UNMATCHED_ROLE_TYPE.toException()
-
-        return ParticipantEntity(
-            eventSheet = eventSheetEntity,
+        val participantEntity = ParticipantEntity(
+            eventSheetEntity = eventSheetEntity,
             user = userEntity,
             role = participantRoleEntity,
             timeZoneEntity = participant.timeZone.toEntity(),
-            availableTimeSlotEntities = participant.availableTimeSlots.map { it.toEntity() }.toMutableList()
+            availableTimeSlotEntities = mutableListOf()
+        )
+        val availableTimeSlotEntities =
+            participant.availableTimeSlots.map { it.toEntity(participantEntity = participantEntity) }.toMutableList()
+        participantEntity.availableTimeSlotEntities = availableTimeSlotEntities
+        return participantEntity
+    }
+
+    fun toResponse(): ParticipantResponse {
+        return ParticipantResponse(
+            eventSheetCode = eventSheetCode,
+            user = user.toResponse(),
+            role = role,
+            timeZone = timeZone.region,
+            availableTimeSlots = availableTimeSlots.map { it.toResponse() }
         )
     }
 }

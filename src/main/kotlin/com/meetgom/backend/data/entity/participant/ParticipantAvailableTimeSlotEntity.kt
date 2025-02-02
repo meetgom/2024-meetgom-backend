@@ -1,5 +1,6 @@
 package com.meetgom.backend.data.entity.participant
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
@@ -17,6 +18,7 @@ class ParticipantAvailableTimeSlotEntity(
     @MapsId("participantId")
     @ManyToOne(targetEntity = ParticipantEntity::class)
     @JoinColumn(name = "participant_id")
+    @JsonIgnore
     var participantEntity: ParticipantEntity? = null,
 ) {
     fun toDomain(): ParticipantAvailableTimeSlot {

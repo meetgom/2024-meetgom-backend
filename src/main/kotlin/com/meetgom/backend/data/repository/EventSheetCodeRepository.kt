@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface EventCodeRepository : JpaRepository<EventCodeEntity, String> {
-    @Query("SELECT COUNT(ec) > 0 FROM event_code ec WHERE ec.eventCode = :eventCode")
-    fun existsByEventCode(@Param("eventCode") eventCode: String): Boolean
+interface EventSheetCodeRepository : JpaRepository<EventCodeEntity, String> {
+    @Query("SELECT ec FROM event_code ec WHERE ec.eventCode = :eventSheetCodeValue")
+    fun findByEventSheetCode(@Param("eventSheetCodeValue") eventSheetCodeValue: String): EventCodeEntity?
 }
