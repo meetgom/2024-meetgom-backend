@@ -1,7 +1,7 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.http.response.TimeZoneResponse
-import com.meetgom.backend.service.UtilService
+import com.meetgom.backend.controller.http.response.TimeZoneResponse
+import com.meetgom.backend.domain.service.UtilService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,10 +16,11 @@ class UtilController(
 ) {
     @GetMapping("/time-zones")
     fun getTimeZones(
-        @RequestParam search: String?
+        @RequestParam keyword: String?
     ): TimeZoneResponse {
+        val timeZoneRegions = utilService.readTimeZoneByKeyword(keyword = keyword).map { it.region }
         return TimeZoneResponse(
-            timeZones = utilService.readActiveTimeZones(search = search)
+            timeZones = timeZoneRegions
         )
     }
 }

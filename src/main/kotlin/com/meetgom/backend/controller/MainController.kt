@@ -1,7 +1,7 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.http.HttpResponse
-import com.meetgom.backend.model.http.response.ServerStatusResponse
+import com.meetgom.backend.controller.http.HttpResponse
+import com.meetgom.backend.controller.http.response.ServerStatusResponse
 import com.meetgom.backend.utils.listener.ApplicationStartedEventListener
 import com.meetgom.backend.utils.GitUtils
 import io.swagger.v3.oas.annotations.Operation

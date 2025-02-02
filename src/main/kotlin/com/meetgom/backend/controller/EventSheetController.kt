@@ -1,12 +1,12 @@
 package com.meetgom.backend.controller
 
-import com.meetgom.backend.model.domain.EventSheetTimeSlot
-import com.meetgom.backend.model.http.HttpResponse
-import com.meetgom.backend.model.http.request.PostEventSheetRequest
-import com.meetgom.backend.model.http.request.PostRecurringWeekdaysEventSheetRequest
-import com.meetgom.backend.model.http.request.PostSpecificDatesEventSheetRequest
-import com.meetgom.backend.model.http.response.EventSheetResponse
-import com.meetgom.backend.service.EventSheetService
+import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
+import com.meetgom.backend.controller.http.HttpResponse
+import com.meetgom.backend.controller.http.request.PostEventSheetRequest
+import com.meetgom.backend.controller.http.request.PostRecurringWeekdaysEventSheetRequest
+import com.meetgom.backend.controller.http.request.PostSpecificDatesEventSheetRequest
+import com.meetgom.backend.controller.http.response.EventSheetResponse
+import com.meetgom.backend.domain.service.EventSheetService
 import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -61,12 +61,10 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
     fun getEventSheetByEventCode(
         @PathVariable eventCode: String,
         @RequestParam region: String?,
-        @RequestParam pinCode: String?
     ): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.readEventSheetByEventCode(
-            eventCode = eventCode,
+            eventSheetCode = eventCode,
             region = region,
-            pinCode = pinCode
         )
         return HttpResponse.of(eventSheet.toResponse())
     }

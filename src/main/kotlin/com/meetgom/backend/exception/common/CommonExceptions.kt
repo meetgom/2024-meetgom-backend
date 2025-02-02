@@ -1,5 +1,8 @@
 package com.meetgom.backend.exception.common
 
+import com.meetgom.backend.exception.common.MGExceptionStatus
+import com.meetgom.backend.exception.common.MGExceptions
+
 enum class CommonExceptions(
     override val status: MGExceptionStatus,
     override val message: String
