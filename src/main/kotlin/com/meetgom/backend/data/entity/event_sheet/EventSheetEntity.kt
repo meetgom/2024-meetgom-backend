@@ -32,6 +32,10 @@ class EventSheetEntity(
     val eventCodeEntity: EventCodeEntity,
 
     @ManyToOne
+    @JoinColumn(name = "time_zone_id")
+    val timeZoneEntity: TimeZoneEntity,
+
+    @ManyToOne
     @JoinColumn(name = "host_time_zone_id")
     val hostTimeZoneEntity: TimeZoneEntity,
 
@@ -71,10 +75,10 @@ class EventSheetEntity(
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             manualActive = this.manualActive,
-            timeZone = this.hostTimeZoneEntity.toDomain(),
+            timeZone = this.timeZoneEntity.toDomain(),
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventSheetCode = eventCodeEntity.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() }
-        )
+        ).convertTimeZone()
     }
 }

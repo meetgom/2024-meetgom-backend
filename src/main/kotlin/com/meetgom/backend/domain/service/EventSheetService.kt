@@ -10,8 +10,8 @@ import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
 import com.meetgom.backend.domain.service.common.CommonEventSheetService
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
+import com.meetgom.backend.utils.extends.sorted
 import jakarta.transaction.Transactional
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -93,7 +93,7 @@ class EventSheetService(
             if (dayOfWeeks.distinct().size != dayOfWeeks.size)
                 throw EventSheetExceptions.INVALID_DAY_OF_WEEKS.toException()
         }
-        eventSheetTimeSlots.sorted()
+        eventSheetTimeSlots.sorted(eventSheetType = eventSheetType)
             .forEach { eventSheetTimeSlot ->
                 if (eventSheetTimeSlot.startTime.isAfter(eventSheetTimeSlot.endTime))
                     throw EventSheetExceptions.INVALID_EVENT_SHEET_TIME_SLOTS.toException()

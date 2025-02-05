@@ -5,6 +5,7 @@ import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.controller.http.response.EventSheetResponse
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.alignTimeSlots
+import com.meetgom.backend.utils.extends.sorted
 import com.meetgom.backend.utils.extends.toTimeZone
 import java.time.ZonedDateTime
 
@@ -33,7 +34,7 @@ data class EventSheet(
 
     }
 
-    fun convertTimeZone(to: TimeZone?): EventSheet {
+    fun convertTimeZone(to: TimeZone? = null): EventSheet {
         val timeZone = to ?: hostTimeZone
         val activeStartDateTime = this.activeStartDateTime?.toTimeZone(timeZone)
         val activeEndDateTime = this.activeEndDateTime?.toTimeZone(timeZone)
@@ -42,7 +43,7 @@ data class EventSheet(
                 from = this.timeZone,
                 to = timeZone,
             )
-        }.flatten().alignTimeSlots()
+        }.flatten().sorted(eventSheetType = eventSheetType)
 
         return EventSheet(
             id = this.id,
@@ -66,7 +67,7 @@ data class EventSheet(
     }
 
     fun getMatchedTimeZone(region: String?): TimeZone? {
-        return when(region) {
+        return when (region) {
             this.hostTimeZone.region -> this.hostTimeZone
             this.timeZone.region -> this.timeZone
             else -> null
@@ -83,6 +84,7 @@ data class EventSheet(
             activeStartDateTime = eventSheet.activeStartDateTime,
             activeEndDateTime = eventSheet.activeEndDateTime,
             manualActive = eventSheet.manualActive,
+            timeZoneEntity = eventSheet.timeZone.toEntity(),
             hostTimeZoneEntity = eventSheet.hostTimeZone.toEntity(),
             eventCodeEntity = eventSheet.eventSheetCode.toEntity(),
             eventSheetTimeSlotEntities = mutableListOf(),
