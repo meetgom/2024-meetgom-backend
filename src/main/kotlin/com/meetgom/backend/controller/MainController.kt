@@ -19,9 +19,15 @@ class MainController {
     fun getMeetgomStatus(): HttpResponse<ServerStatusResponse> {
         val running = "Server is running"
         val startedAt = ApplicationStartedEventListener.startTime
-        val gitLatestLog = kotlin
-            .runCatching { GitUtils.getGitLogs().first() }
-            .getOrNull()
-        return HttpResponse.of(ServerStatusResponse(running, startedAt, gitLatestLog))
+        val gitBranch = GitUtils.getGitBranch()
+        val latestGitLog = GitUtils.getGitLogs().first()
+        return HttpResponse.of(
+            ServerStatusResponse(
+                status = running,
+                startedAt = startedAt,
+                gitBranch = gitBranch,
+                latestGitLog = latestGitLog
+            )
+        )
     }
 }

@@ -5,5 +5,6 @@ import java.time.ZonedDateTime
 data class ServerStatusResponse(
     val status: String,
     val startedAt: ZonedDateTime?,
+    val gitBranch: String?,
     val latestGitLog: String?,
 )
