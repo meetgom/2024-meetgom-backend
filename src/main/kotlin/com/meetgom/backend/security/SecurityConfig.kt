@@ -52,7 +52,7 @@ class SecurityConfig(
                     .requestMatchers(*permitAllWhiteList.toTypedArray()).permitAll()
                     .anyRequest().authenticated()
             }
-//            .cors { it.configurationSource(corsConfigurationSource()) }
+            .cors { it.configurationSource(corsConfigurationSource()) }
 //            .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
 //            .authenticationProvider(authenticationProvider())
         return http.build()
