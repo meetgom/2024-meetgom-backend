@@ -209,7 +209,7 @@ function git_pull {
   if [[ "$output" == "Already up to date." ]]; then
     no_changed=1
   fi
-  message_validator "$output" "$exit_opt"
+  message_validator "$output\n" "$exit_opt"
   cd "$current" || return
 }
 
@@ -280,10 +280,10 @@ function shutdown_server {
   current_pid=$(echo "$lsof_output" | awk 'NR==2{print $2}')
 
   if [[ "$current_program" = "$program" ]]; then
-    status_message "Running process: $current_pid/$current_program"
+    success_message "Running process: $current_pid/$current_program"
     default_message "Shutting down the $current_program process..."
     kill -9 "$current_pid"
-    default_message "Shut downed.\n"
+    error_message "Shut downed.\n"
   elif [[ -z "$current_program" ]]; then
     default_message "No running process.\n"
   else
@@ -346,7 +346,6 @@ function run_server {
 
   # session
   if [[ -n "$session_name" ]]; then
-    echo ""
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
     validate_not_empty "$session" "Session name not found.\n"
     status_message "[$session] run server"
