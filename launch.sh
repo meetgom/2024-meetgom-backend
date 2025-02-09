@@ -414,9 +414,13 @@ done
 ### process
 validate_os
 [ "$sp" -eq 0 ] && git_pull "$project_path" -e
+echo ""
 [ "$no_changed" -eq 0 ] && build_server "$project_path" "$cb" -e
+echo ""
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
   shutdown_server "$port" -e
+  echo ""
   run_server "$project_path" "${session[@]}" "$exit_opt" "$background" "${background_out[@]}"
+  echo ""
 fi
 status_message "Finished."
