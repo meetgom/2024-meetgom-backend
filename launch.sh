@@ -72,7 +72,7 @@ function error_message {
         shift
         ;;
       -b)
-        effect="-e bold"
+        effect=("-e" "bold")
         shift
         ;;
       -e)
@@ -94,7 +94,7 @@ function error_message {
   if [[ -z "$message" ]]; then
     message="An error has occurred."
   fi
-  styled_text -c red "$effect" "$prefix$message\n"
+  styled_text -c red "${effect[@]}" "$prefix$message\n"
   if [[ "$exit" -eq 1 ]]; then
     exit "$error_code"
   fi
@@ -293,7 +293,7 @@ function shutdown_server {
 function run_server {
   status_message "Run the java server..."
   path="" exit_opt=""
-  session_name=""
+  session_name=
   background=0 background_out="out.log"
   while [[ "$#" -gt 0 ]]; do
     echo "$1"
@@ -364,8 +364,8 @@ script_name=$(basename "${BASH_SOURCE[0]}")
 current_path=$(pwd)
 project_path=$current_path
 port="8080"
-session=""
-background=0 background_out=""
+session=()
+background=0 background_out=()
 sp=0 cb=""
 no_changed=0 reboot=0
 while [[ "$#" -gt 0 ]]; do
@@ -375,7 +375,7 @@ while [[ "$#" -gt 0 ]]; do
       exit 0
       ;;
     -s)
-      session="-s $2"
+      session=("-s" "$2")
       shift 2
       ;;
     -b)
@@ -387,7 +387,7 @@ while [[ "$#" -gt 0 ]]; do
       shift
       ;;
     -o)
-      background_out="-o $2"
+      background_out=("-o" "$2")
       shift 2
       ;;
     -p)
@@ -417,7 +417,6 @@ validate_os
 [ "$no_changed" -eq 0 ] && build_server "$project_path" "$cb" -e
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
   shutdown_server "$port" -e
-  echo "$session"
-  run_server "$project_path" "$session" "$exit_opt" "$background"
+  run_server "$project_path" "${session[@]}" "$exit_opt" "$background" "${background_out[@]}"
 fi
 status_message "Finished."
