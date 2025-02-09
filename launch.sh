@@ -324,7 +324,7 @@ function run_server {
   validate_not_empty "$path" "Path argument is required."
 
   build_file_dir="$path/build/libs"
-  jar_files=("$build_file_dir"/*"[^-plain]".jar)
+  jar_files=("$build_file_dir"/*[^-plain].jar)
   jar_file="${jar_files[0]}"
 
   # first matched jar file
