@@ -342,7 +342,6 @@ function run_server {
   fi
 
   # session
-  echo "session_name: $session_name"
   if [[ -n "$session_name" ]]; then
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
     validate_not_empty "$session" "Session name not found."
@@ -418,6 +417,6 @@ validate_os
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
   shutdown_server "$port" -e
   echo "$session"
-  run_server "$project_path" "$exit_opt" "$session" "$background"
+  run_server "$project_path" "$session" "$exit_opt" "$background"
 fi
 status_message "Finished."
