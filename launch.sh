@@ -128,7 +128,7 @@ function message_validator {
         ;;
     esac
   done
-  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error|fail|fatal/ {print $0}')
+  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error:|fail|fatal/ {print $0}')
   if [[ -z "$errors" ]]; then
     default_message "$value"
   else
