@@ -234,8 +234,13 @@ function build_server {
     esac
   done
   validate_not_empty "$path" "Path argument is required."
-  default_message "gradlew build path: $current"
-  output=$(eval "$path"/gradlew "$clean"build 2>&1)
+  current=$(pwd)
+  cd "$path" || return
+  pw=$(pwd)
+  default_message "gradlew build path: $pw"
+  cmd="./gradlew $clean build 2>&1"
+  output=$(eval "$cmd")
+  cd "$current" || return
   message_validator "$output" "$exit_opt"
 }
 
