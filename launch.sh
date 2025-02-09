@@ -110,13 +110,8 @@ function validate_not_empty {
 function message_validator {
   value="" exit_opt="" error_code=1
   error_code=1 message=""
-  error_words=""
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
-      -w)
-        error_code="$2"
-        shift 2
-        ;;
       -c)
         error_code="$2"
         shift 2
@@ -133,14 +128,14 @@ function message_validator {
         ;;
     esac
   done
-  if [[ -z "$error_words" ]]; then
-    error_words="|$error_words"
-  fi
-  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error|fail$error_words/ {print $0}')
-  if [[ -z "$errors" ]]; then
-    default_message "$value"
-  else
+  success=$(echo "$value" | awk '{print tolower($0)}' | awk '/success/ {print $0}')
+  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error:|fail|fatal/ {print $0}')
+  if [[ -n "$errors" ]]; then
     error_message -sp "$value" "$exit_opt"
+  elif [[ -n "$success" ]]; then
+    success_message "$value"
+  else
+    default_message "$value"
   fi
 }
 
@@ -209,12 +204,12 @@ function git_pull {
   current=$(pwd)
   cd "$path" || return
   pw=$(pwd)
-  echo "path: $pw"
+  default_message "git pull path: $pw"
   output=$(git pull 2>&1)
-  if [[ "$output" != "Already up to date." ]]; then
+  if [[ "$output" == "Already up to date." ]]; then
     no_changed=1
   fi
-  message_validator "$output" "$exit_opt" -w "fatal"
+  message_validator "$output" "$exit_opt"
   cd "$current" || return
 }
 
@@ -242,10 +237,15 @@ function build_server {
     esac
   done
   validate_not_empty "$path" "Path argument is required."
-
   current=$(pwd)
-  output=$("$path"/gradlew "$clean"build 2>&1)
-  message_validator "$output" "$exit_opt"
+  cd "$path" || return
+  pw=$(pwd)
+  default_message "gradlew build path: $pw"
+  output=""
+  while IFS= read -r line; do
+    message_validator "$line"
+  done < <(./gradlew $clean build 2>&1)
+  cd "$current" || return
 }
 
 ### shutdown server
