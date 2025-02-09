@@ -110,8 +110,13 @@ function validate_not_empty {
 function message_validator {
   value="" exit_opt="" error_code=1
   error_code=1 message=""
+  error_words=""
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
+      -w)
+        error_code="$2"
+        shift 2
+        ;;
       -c)
         error_code="$2"
         shift 2
@@ -128,7 +133,10 @@ function message_validator {
         ;;
     esac
   done
-  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error|fail/ {print $0}')
+  if [[ -z "$error_words" ]]; then
+    error_words="|$error_words"
+  fi
+  errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error|fail$error_words/ {print $0}')
   if [[ -z "$errors" ]]; then
     default_message "$value"
   else
@@ -206,7 +214,7 @@ function git_pull {
   if [[ "$output" != "Already up to date." ]]; then
     no_changed=1
   fi
-  message_validator "$output" "$exit_opt"
+  message_validator "$output" "$exit_opt" -w "fatal"
   cd "$current" || return
 }
 
