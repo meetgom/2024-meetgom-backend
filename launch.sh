@@ -413,6 +413,7 @@ done
 
 ### process
 validate_os
+echo "sess: $session_name"
 [ "$sp" -eq 0 ] && git_pull "$project_path" -e
 [ "$no_changed" -eq 0 ] && build_server "$project_path" "$cb" -e
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
