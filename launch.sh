@@ -238,8 +238,12 @@ function build_server {
   cd "$path" || return
   pw=$(pwd)
   default_message "gradlew build path: $pw"
-  output=$(./gradlew $clean build 2>&1)
-  message_validator "$output" "$exit_opt"
+
+  output=""
+  while IFS= read -r line; do
+    message_validator "$line" "$exit_opt"
+  done < <(./gradlew "$clean" build 2>&1)
+
   cd "$current" || return
 }
 
