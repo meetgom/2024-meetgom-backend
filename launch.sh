@@ -245,6 +245,7 @@ function build_server {
   while IFS= read -r line; do
     message_validator "$line"
   done < <(./gradlew $clean build 2>&1)
+  echo ""
   cd "$current" || return
 }
 
@@ -282,11 +283,11 @@ function shutdown_server {
     status_message "Running process: $current_pid/$current_program"
     default_message "Shutting down the $current_program process..."
     kill -9 "$current_pid"
-    default_message "Shut downed."
+    default_message "Shut downed.\n"
   elif [[ -z "$current_program" ]]; then
-    default_message "No running process."
+    default_message "No running process.\n"
   else
-    error_message "Another process($current_pid/$current_program) is in use." "$exit_opt"
+    error_message "Another process($current_pid/$current_program) is in use.\n" "$exit_opt"
   fi
 }
 
@@ -341,16 +342,16 @@ function run_server {
     run_cmd="nohup $run_cmd > $background_out &"
   fi
 
-  default_message "command: $run_cmd"
+  default_message "command: $run_cmd\n"
 
   # session
   if [[ -n "$session_name" ]]; then
     echo ""
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
-    validate_not_empty "$session" "Session name not found."
+    validate_not_empty "$session" "Session name not found.\n"
     status_message "[$session] run server"
     screen -S "$session" -X stuff "$(printf "%s\r" "$run_cmd")"
-    success_message "Successfully sent command to session[$session]"
+    success_message "Successfully sent command to session[$session]\n"
   else
     eval "$run_cmd"
   fi
@@ -369,7 +370,7 @@ port="8080"
 session=()
 background=0 background_out=()
 sp=0 cb=""
-no_changed=0 reboot=0
+no_changed=0 build=0 reboot=0
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -h)
@@ -381,6 +382,10 @@ while [[ "$#" -gt 0 ]]; do
       shift 2
       ;;
     -b)
+      build=1
+      shift
+      ;;
+    -bc)
       background="-b"
       shift
       ;;
@@ -416,12 +421,11 @@ done
 ### process
 validate_os
 [ "$sp" -eq 0 ] && git_pull "$project_path" -e
-echo ""
-[ "$no_changed" -eq 0 ] && build_server "$project_path" "$cb" -e
-echo ""
+if [ "$no_changed" -eq 0 ] || [ "$build" -eq 1 ]; then
+  build_server "$project_path" "$cb" -e
+fi
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
   shutdown_server "$port" -e
-  echo ""
   run_server "$project_path" "${session[@]}" "$exit_opt" "$background" "${background_out[@]}"
   echo ""
 fi
