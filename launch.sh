@@ -206,7 +206,7 @@ function git_pull {
   pw=$(pwd)
   default_message "git pull path: $pw"
   output=$(git pull 2>&1)
-  if [[ "$output" != "Already up to date." ]]; then
+  if [[ "$output" == "Already up to date." ]]; then
     no_changed=1
   fi
   message_validator "$output" "$exit_opt"
