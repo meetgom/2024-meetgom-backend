@@ -128,11 +128,14 @@ function message_validator {
         ;;
     esac
   done
+  success=$(echo "$value" | awk '{print tolower($0)}' | awk '/success/ {print $0}')
   errors=$(echo "$value" | awk '{print tolower($0)}' | awk '/error:|fail|fatal/ {print $0}')
-  if [[ -z "$errors" ]]; then
-    default_message "$value"
-  else
+  if [[ -n "$errors" ]]; then
     error_message -sp "$value" "$exit_opt"
+  elif [[ -n "$success" ]]; then
+    success_message "$value"
+  else
+    default_message "$value"
   fi
 }
 
