@@ -72,7 +72,7 @@ function error_message {
         shift
         ;;
       -b)
-        effect="-e bold"
+        effect=("-e" "bold")
         shift
         ;;
       -e)
@@ -94,7 +94,7 @@ function error_message {
   if [[ -z "$message" ]]; then
     message="An error has occurred."
   fi
-  styled_text -c red "$effect" "$prefix$message\n"
+  styled_text -c red "${effect[@]}" "$prefix$message\n"
   if [[ "$exit" -eq 1 ]]; then
     exit "$error_code"
   fi
@@ -293,7 +293,7 @@ function shutdown_server {
 function run_server {
   status_message "Run the java server..."
   path="" exit_opt=""
-  session_name=""
+  session_name=
   background=0 background_out="out.log"
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -324,7 +324,7 @@ function run_server {
   validate_not_empty "$path" "Path argument is required."
 
   build_file_dir="$path/build/libs"
-  jar_files=("$build_file_dir"/*"[^-plain]".jar)
+  jar_files=("$build_file_dir"/*[^-plain].jar)
   jar_file="${jar_files[0]}"
 
   # first matched jar file
@@ -341,13 +341,16 @@ function run_server {
     run_cmd="nohup $run_cmd > $background_out &"
   fi
 
+  default_message "command: $run_cmd"
+
   # session
   if [[ -n "$session_name" ]]; then
+    echo ""
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
     validate_not_empty "$session" "Session name not found."
     status_message "[$session] run server"
-    screen -S "$session" -X stuff "$(printf "%s\n" "$run_cmd")"
-    message_validator "$output" "$exit_opt"
+    screen -S "$session" -X stuff "$(printf "%s\r" "$run_cmd")"
+    success_message "Successfully sent command to session[$session]"
   else
     eval "$run_cmd"
   fi
@@ -363,8 +366,8 @@ script_name=$(basename "${BASH_SOURCE[0]}")
 current_path=$(pwd)
 project_path=$current_path
 port="8080"
-session=""
-background=0 background_out=""
+session=()
+background=0 background_out=()
 sp=0 cb=""
 no_changed=0 reboot=0
 while [[ "$#" -gt 0 ]]; do
@@ -374,7 +377,7 @@ while [[ "$#" -gt 0 ]]; do
       exit 0
       ;;
     -s)
-      session="-s $2"
+      session=("-s" "$2")
       shift 2
       ;;
     -b)
@@ -386,7 +389,7 @@ while [[ "$#" -gt 0 ]]; do
       shift
       ;;
     -o)
-      background_out="-o $2"
+      background_out=("-o" "$2")
       shift 2
       ;;
     -p)
@@ -413,9 +416,13 @@ done
 ### process
 validate_os
 [ "$sp" -eq 0 ] && git_pull "$project_path" -e
+echo ""
 [ "$no_changed" -eq 0 ] && build_server "$project_path" "$cb" -e
+echo ""
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
   shutdown_server "$port" -e
-  run_server "$project_path" "$exit_opt" "$session" "$background"
+  echo ""
+  run_server "$project_path" "${session[@]}" "$exit_opt" "$background" "${background_out[@]}"
+  echo ""
 fi
-status_message "Finished."
+status_message "Finished.\n"
