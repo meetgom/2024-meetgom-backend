@@ -342,6 +342,7 @@ function run_server {
   fi
 
   # session
+  echo "session_name: $session_name"
   if [[ -n "$session_name" ]]; then
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
     validate_not_empty "$session" "Session name not found."
