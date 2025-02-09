@@ -241,9 +241,7 @@ function build_server {
   output=""
   while IFS= read -r line; do
     message_validator "$line"
-    output+="$line"$'\n' # 실행 결과를 변수에 저장
   done < <(./gradlew $clean build 2>&1)
-  echo "$output"
   cd "$current" || return
 }
 
