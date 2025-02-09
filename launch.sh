@@ -200,6 +200,8 @@ function git_pull {
   done
   current=$(pwd)
   cd "$path" || return
+  pw=$(pwd)
+  echo "path: $pw"
   output=$(git pull 2>&1)
   if [[ "$output" != "Already up to date." ]]; then
     no_changed=1
@@ -347,7 +349,7 @@ function run_server {
 # main
 # -------------------------------
 ### arguments
-sudo_command=$(sudo_cmd)
+#sudo_command=$(sudo_cmd)
 script_name=$(basename "${BASH_SOURCE[0]}")
 
 project_path=$(pwd)
