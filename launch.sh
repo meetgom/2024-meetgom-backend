@@ -296,6 +296,7 @@ function run_server {
   session_name=""
   background=0 background_out="out.log"
   while [[ "$#" -gt 0 ]]; do
+    echo "$1"
     case "$1" in
       -s)
         session_name="$2"
