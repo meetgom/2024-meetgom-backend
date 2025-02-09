@@ -1,11 +1,12 @@
 package com.meetgom.backend.utils.extends
 
 import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
+import com.meetgom.backend.type.EventSheetType
 import java.time.temporal.ChronoUnit
 
 fun List<ParticipantAvailableTimeSlot>.alignTimeSlots(): List<ParticipantAvailableTimeSlot> {
     return this.sorted()
-        .fold(mutableListOf<ParticipantAvailableTimeSlot>()) { acc, timeSlot ->
+        .fold(mutableListOf()) { acc, timeSlot ->
             if (acc.isEmpty()) {
                 acc.add(timeSlot)
             } else {
@@ -15,7 +16,6 @@ fun List<ParticipantAvailableTimeSlot>.alignTimeSlots(): List<ParticipantAvailab
                     acc.removeLast()
                     acc.add(
                         ParticipantAvailableTimeSlot(
-                            participantId = last.participantId,
                             date = last.date,
                             startTime = last.startTime,
                             endTime = last.endTime.max(timeSlot.endTime)
@@ -27,4 +27,18 @@ fun List<ParticipantAvailableTimeSlot>.alignTimeSlots(): List<ParticipantAvailab
             }
             acc
         }
+}
+
+fun List<ParticipantAvailableTimeSlot>.sorted(eventSheetType: EventSheetType): List<ParticipantAvailableTimeSlot> {
+    return when (eventSheetType) {
+        EventSheetType.SPECIFIC_DATES -> this.alignTimeSlots()
+        EventSheetType.RECURRING_WEEKDAYS -> this.alignTimeSlots()
+            .sortedWith(
+                compareBy(
+                    { it.date.dayOfWeek.ordinal },
+                    { it.startTime },
+                    { it.endTime }
+                )
+            )
+    }
 }

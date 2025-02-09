@@ -1,6 +1,6 @@
 package com.meetgom.backend.data.entity.event_sheet
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
@@ -12,7 +12,7 @@ class EventSheetTimeSlotEntity(
     @EmbeddedId
     val eventSheetTimeSlotPrimaryKey: EventSheetTimeSlotPrimaryKey,
 
-    @Column(name = "end_date_time")
+    @Column(name = "end_time")
     var endTime: LocalTime,
 
     @MapsId("eventSheetId")
@@ -21,7 +21,7 @@ class EventSheetTimeSlotEntity(
         fetch = FetchType.LAZY
     )
     @JoinColumn(name = "event_sheet_id")
-    @JsonIgnore
+    @JsonBackReference
     var eventSheetEntity: EventSheetEntity? = null,
 ) {
     fun toDomain(): EventSheetTimeSlot {

@@ -1,6 +1,8 @@
 package com.meetgom.backend.data.entity.event_sheet
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.meetgom.backend.data.entity.common.TimeZoneEntity
+import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.type.EventSheetType
 import jakarta.persistence.*
@@ -51,6 +53,7 @@ class EventSheetEntity(
         fetch = FetchType.LAZY
     )
     @JoinColumn(name = "event_sheet_id")
+    @JsonManagedReference
     var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>,
 
     @UpdateTimestamp
@@ -63,6 +66,15 @@ class EventSheetEntity(
 
     @Column(name = "manual_active")
     val manualActive: Boolean? = false,
+
+    @OneToMany(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "event_sheet_id")
+    @JsonManagedReference
+    var participantEntities: MutableList<ParticipantEntity>? = null,
 ) {
     fun toDomain(): EventSheet {
         return EventSheet(
@@ -78,7 +90,8 @@ class EventSheetEntity(
             timeZone = this.timeZoneEntity.toDomain(),
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventSheetCode = eventCodeEntity.toDomain(),
-            eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() }
+            eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() },
+            participants = this.participantEntities?.map { it.toDomain() } ?: emptyList(),
         ).convertTimeZone()
     }
 }

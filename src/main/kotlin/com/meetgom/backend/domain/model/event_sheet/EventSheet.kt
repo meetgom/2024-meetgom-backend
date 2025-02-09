@@ -3,6 +3,7 @@ package com.meetgom.backend.domain.model.event_sheet
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.controller.http.response.EventSheetResponse
+import com.meetgom.backend.domain.model.participant.Participant
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.alignTimeSlots
 import com.meetgom.backend.utils.extends.sorted
@@ -22,7 +23,8 @@ data class EventSheet(
     val eventSheetTimeSlots: List<EventSheetTimeSlot>,
     val manualActive: Boolean? = false,
     val createdAt: ZonedDateTime? = null,
-    val updatedAt: ZonedDateTime? = null
+    val updatedAt: ZonedDateTime? = null,
+    val participants: List<Participant>,
 ) {
     private fun isActive(): Boolean {
         val now = ZonedDateTime.now()
@@ -59,6 +61,7 @@ data class EventSheet(
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             timeZone = timeZone,
+            participants = this.participants,
         )
     }
 
@@ -110,7 +113,8 @@ data class EventSheet(
             eventSheetTimeSlots = this.eventSheetTimeSlots.map { it.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS) },
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            timeZone = this.timeZone.region
+            timeZone = this.timeZone.region,
+            participant = participants.map { it.toResponse() }
         )
     }
 }

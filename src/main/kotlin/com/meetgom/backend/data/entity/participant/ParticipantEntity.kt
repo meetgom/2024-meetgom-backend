@@ -1,6 +1,8 @@
 package com.meetgom.backend.data.entity.participant
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.data.entity.user.UserEntity
@@ -15,7 +17,7 @@ class ParticipantEntity(
 
     @ManyToOne
     @JoinColumn(name = "event_sheet_id")
-    @JsonIgnore
+    @JsonBackReference
     val eventSheetEntity: EventSheetEntity,
 
     @ManyToOne
@@ -36,6 +38,7 @@ class ParticipantEntity(
         fetch = FetchType.LAZY
     )
     @JoinColumn(name = "participant_id")
+    @JsonManagedReference
     var availableTimeSlotEntities: MutableList<ParticipantAvailableTimeSlotEntity>,
 ) {
     fun toDomain(): Participant {

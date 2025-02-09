@@ -56,14 +56,14 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
         return postEventSheet(postEventSheetRequest)
     }
 
-    @GetMapping(path = ["/{eventCode}"])
+    @GetMapping(path = ["/{eventSheetCode}"])
     @Operation(summary = "read Event Sheet")
     fun getEventSheetByEventCode(
-        @PathVariable eventCode: String,
+        @PathVariable eventSheetCode: String,
         @RequestParam region: String?,
     ): HttpResponse<EventSheetResponse> {
         val eventSheet = eventSheetService.readEventSheetByEventCode(
-            eventSheetCode = eventCode,
+            eventSheetCode = eventSheetCode,
             region = region,
         )
         return HttpResponse.of(eventSheet.toResponse())

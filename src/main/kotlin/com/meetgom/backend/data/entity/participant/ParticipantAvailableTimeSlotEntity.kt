@@ -1,6 +1,6 @@
 package com.meetgom.backend.data.entity.participant
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
 import jakarta.persistence.*
 import java.io.Serializable
@@ -12,13 +12,13 @@ class ParticipantAvailableTimeSlotEntity(
     @EmbeddedId
     val participantAvailableTimeSlotPrimaryKey: ParticipantAvailableTimeSlotPrimaryKey,
 
-    @Column(name = "end_date_time")
+    @Column(name = "end_time")
     var endTime: LocalTime,
 
     @MapsId("participantId")
-    @ManyToOne(targetEntity = ParticipantEntity::class)
+    @ManyToOne(targetEntity = ParticipantEntity::class, fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id")
-    @JsonIgnore
+    @JsonBackReference
     var participantEntity: ParticipantEntity? = null,
 ) {
     fun toDomain(): ParticipantAvailableTimeSlot {
@@ -39,6 +39,6 @@ data class ParticipantAvailableTimeSlotPrimaryKey(
     @Column(name = "date")
     val date: LocalDate,
 
-    @Column(name = "start_date_time")
+    @Column(name = "start_time")
     val startTime: LocalTime
 ) : Serializable

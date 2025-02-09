@@ -4,6 +4,7 @@ import com.meetgom.backend.controller.http.HttpResponse
 import com.meetgom.backend.controller.http.request.PostAnonymousParticipantRequest
 import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
+import com.meetgom.backend.domain.model.participant.TempParticipantAvailableTimeSlot
 import com.meetgom.backend.domain.service.ParticipantService
 import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
@@ -25,9 +26,10 @@ class ParticipantController(private val participantService: ParticipantService) 
             userName = postParticipantRequest.userName,
             password = postParticipantRequest.password,
             region = postParticipantRequest.region,
-            availableTimeSlots = postParticipantRequest.availableTimeSlots.map {
-                ParticipantAvailableTimeSlot(
+            tempAvailableTimeSlots = postParticipantRequest.availableTimeSlots.map {
+                TempParticipantAvailableTimeSlot(
                     date = it.date,
+                    dayOfWeek = it.dayOfWeek,
                     startTime = TimeUtils.timeStringToLocalTime(it.startTime),
                     endTime = TimeUtils.timeStringToLocalTime(it.endTime)
                 )

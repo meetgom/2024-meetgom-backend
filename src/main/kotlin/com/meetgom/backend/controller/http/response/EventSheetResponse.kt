@@ -102,4 +102,10 @@ data class EventSheetResponse(
         defaultValue = "yyyy-MM-dd'T'hh:mm:ss'Z'",
     )
     val updatedAt: ZonedDateTime?,
+
+    @Schema(
+        title = "Participant",
+        description = "EventSheet 참여자",
+    )
+    val participant: List<ParticipantResponse>
 )

@@ -5,6 +5,7 @@ import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotPrimaryKey
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.controller.http.response.EventSheetTimeSlotResponse
+import com.meetgom.backend.domain.model.participant.ParticipantAvailableTimeSlot
 import com.meetgom.backend.utils.TimeUtils
 import com.meetgom.backend.utils.extends.*
 import java.time.LocalDate
@@ -40,6 +41,13 @@ data class EventSheetTimeSlot(
                 )
             }
     }
+
+    fun contains(participantSlot: ParticipantAvailableTimeSlot): Boolean {
+        return this.date == participantSlot.date &&
+                this.startTime <= participantSlot.startTime &&
+                this.endTime >= participantSlot.endTime
+    }
+
 
     // MARK: - Converters
     fun toEntity(eventSheetEntity: EventSheetEntity? = null): EventSheetTimeSlotEntity {

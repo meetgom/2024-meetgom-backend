@@ -19,7 +19,6 @@ data class Participant(
     val timeZone: TimeZone,
     val availableTimeSlots: List<ParticipantAvailableTimeSlot>
 ) {
-
     fun convertTimeZone(to: TimeZone): Participant {
         val availableTimeSlots = this.availableTimeSlots.map {
             it.convertTimeZone(

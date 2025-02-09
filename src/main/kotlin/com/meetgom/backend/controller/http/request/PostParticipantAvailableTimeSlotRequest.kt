@@ -1,6 +1,7 @@
 package com.meetgom.backend.controller.http.request
 
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Schema(title = "Post Event Sheet Time Slot Request")
@@ -9,7 +10,13 @@ data class PostParticipantAvailableTimeSlotRequest(
         title = "Date",
         description = "이벤트 시트 특정 날짜 구간 날짜",
     )
-    val date: LocalDate,
+    val date: LocalDate?,
+
+    @Schema(
+        title = "Day Of Week",
+        description = "이벤트 시트 특정 날짜 구간 요일(MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | SUNDAY)",
+    )
+    val dayOfWeek: DayOfWeek?,
 
     @Schema(
         title = "Start Date Time",

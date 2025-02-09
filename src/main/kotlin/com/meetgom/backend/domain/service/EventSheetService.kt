@@ -55,6 +55,7 @@ class EventSheetService(
             eventSheetTimeSlots = validEventSheetTimeSlots,
             manualActive = manualActive,
             timeZone = hostTimeZone,
+            participants = emptyList()
         ).toEntity()
         return eventSheetRepository.save(eventSheet).toDomain()
     }
