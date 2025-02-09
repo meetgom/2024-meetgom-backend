@@ -238,12 +238,12 @@ function build_server {
   cd "$path" || return
   pw=$(pwd)
   default_message "gradlew build path: $pw"
-
   output=""
   while IFS= read -r line; do
-    message_validator "$line" "$exit_opt"
-  done < <(./gradlew "$clean" build 2>&1)
-
+    message_validator "$output"
+    output+="$line"$'\n' # 실행 결과를 변수에 저장
+  done < <(./gradlew $clean build 2>&1)
+  echo "$output"
   cd "$current" || return
 }
 
