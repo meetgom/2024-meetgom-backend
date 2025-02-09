@@ -341,13 +341,15 @@ function run_server {
     run_cmd="nohup $run_cmd > $background_out &"
   fi
 
+  default_message "command: $run_cmd"
+
   # session
-  default_message "run cmd: $run_cmd"
   if [[ -n "$session_name" ]]; then
+    echo ""
     session=$(screen -ls | awk '/\t/ {print $1}' | grep "$session_name")
     validate_not_empty "$session" "Session name not found."
     status_message "[$session] run server"
-    screen -S "$session" -X stuff "$(printf "%s\n" "$run_cmd")"
+    screen -S "$session" -X stuff "$(printf "%s\r" "$run_cmd")"
     success_message "Successfully sent command to session[$session]"
   else
     eval "$run_cmd"
