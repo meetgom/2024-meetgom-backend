@@ -361,7 +361,7 @@ function run_server {
 script_name=$(basename "${BASH_SOURCE[0]}")
 
 current_path=$(pwd)
-project_path=current_path
+project_path=$current_path
 port="8080"
 session=""
 background=0 background_out=""
