@@ -201,7 +201,7 @@ function git_pull {
   current=$(pwd)
   cd "$path" || return
   pw=$(pwd)
-  echo "git pull path: $pw"
+  default_message "git pull path: $pw"
   output=$(git pull 2>&1)
   if [[ "$output" != "Already up to date." ]]; then
     no_changed=1
@@ -236,7 +236,7 @@ function build_server {
   validate_not_empty "$path" "Path argument is required."
 
   current=$(pwd)
-  echo "gradlew build path: $current"
+  default_message "gradlew build path: $current"
   output=$("$path"/gradlew "$clean"build 2>&1)
   message_validator "$output" "$exit_opt"
 }
