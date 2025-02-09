@@ -360,7 +360,8 @@ function run_server {
 #sudo_command=$(sudo_cmd)
 script_name=$(basename "${BASH_SOURCE[0]}")
 
-project_path=$(pwd)
+current_path=$(pwd)
+project_path=current_path
 port="8080"
 session=""
 background=0 background_out=""
@@ -401,7 +402,7 @@ while [[ "$#" -gt 0 ]]; do
       shift
       ;;
     *)
-      if [[ -z $project_path ]]; then
+      if [[ "$project_path" == "$current_path" && -n "$1" ]]; then
         project_path="$1"
       fi
       shift
