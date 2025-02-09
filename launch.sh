@@ -199,7 +199,7 @@ function git_pull {
         shift
         ;;
       *)
-        if [[ -n $path ]]; then
+        if [[ -z $path ]]; then
           path="$1"
         fi
         shift
