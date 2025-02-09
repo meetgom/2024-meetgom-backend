@@ -348,7 +348,7 @@ function run_server {
     validate_not_empty "$session" "Session name not found."
     status_message "[$session] run server"
     screen -S "$session" -X stuff "$(printf "%s\n" "$run_cmd")"
-    message_validator "$output" "$exit_opt"
+    success_message "Successfully sent command to session[$session]"
   else
     eval "$run_cmd"
   fi
