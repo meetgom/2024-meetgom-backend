@@ -285,7 +285,7 @@ data class PostRecurringWeekdaysEventSheetRequest(
 ) {
     fun toPostEventSheetRequest(): PostEventSheetRequest {
         val eventSheetTimeSlotsRequest = this.recurringWeekdays.map {
-            val date = TimeUtils.getClosestDayOfWeek(it)
+            val date = TimeUtils.getDayOfNextWeek(it)
             PostEventSheetTimeSlotRequest(
                 date = date,
                 startTime = this.startTime,

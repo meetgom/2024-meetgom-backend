@@ -1,5 +1,7 @@
 package com.meetgom.backend.domain.service
 
+import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotEntity
+import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotPrimaryKey
 import com.meetgom.backend.data.repository.EventCodeWordRepository
 import com.meetgom.backend.data.repository.EventSheetCodeRepository
 import com.meetgom.backend.data.repository.EventSheetRepository
@@ -14,6 +16,7 @@ import com.meetgom.backend.utils.extends.sorted
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class EventSheetService(
@@ -44,29 +47,34 @@ class EventSheetService(
             commonEventSheetService.findTimeZoneEntityByRegionWithException(hostTimeZoneRegion).toDomain()
         val eventCode = createRandomEventSheetCode(wordCount = wordCount)
         val validEventSheetTimeSlots = validateEventSheetTimeSlots(eventSheetType, eventSheetTimeSlots)
-        val eventSheet = EventSheet(
+        val eventSheetEntity = EventSheet(
             eventSheetCode = eventCode,
             name = name,
             description = description,
             eventSheetType = eventSheetType,
+            timeZone = hostTimeZone,
             hostTimeZone = hostTimeZone,
             activeStartDateTime = activeStartDateTime?.atTimeZone(hostTimeZone),
             activeEndDateTime = activeEndDateTime?.atTimeZone(hostTimeZone),
             eventSheetTimeSlots = validEventSheetTimeSlots,
             manualActive = manualActive,
-            timeZone = hostTimeZone,
             participants = emptyList()
         ).toEntity()
-        return eventSheetRepository.save(eventSheet).toDomain()
+        return eventSheetRepository.save(eventSheetEntity).toDomain()
     }
 
     fun readEventSheetByEventCode(
         eventSheetCode: String,
         region: String?,
     ): EventSheet {
-        val eventSheet =
+        val eventSheetA =
             commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
-                .toDomain()
+
+        println("readedEntity: $eventSheetA")
+        for (eventSheetTimeSlot in eventSheetA.eventSheetTimeSlotEntities) {
+            println("${eventSheetTimeSlot.eventSheetTimeSlotPrimaryKey.date.dayOfWeek} ${eventSheetTimeSlot.eventSheetTimeSlotPrimaryKey.startTime} ${eventSheetTimeSlot.endTime}")
+        }
+        val eventSheet = eventSheetA.toDomain()
         val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
         return convertedEventSheet
     }

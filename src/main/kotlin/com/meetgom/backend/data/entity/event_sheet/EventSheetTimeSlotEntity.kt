@@ -41,7 +41,7 @@ data class EventSheetTimeSlotPrimaryKey(
     @Column(name = "date")
     val date: LocalDate,
 
-    @Column(name = "start_date_time")
+    @Column(name = "start_time")
     val startTime: LocalTime
 ) : Serializable
 

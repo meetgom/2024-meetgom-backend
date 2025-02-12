@@ -17,6 +17,16 @@ data class EventSheetTimeSlot(
     val startTime: LocalTime,
     val endTime: LocalTime
 ) : Comparable<EventSheetTimeSlot> {
+    companion object {
+        fun comparatorForSpecificDates(): Comparator<EventSheetTimeSlot> {
+            return compareBy({ it.date }, { it.startTime }, { it.endTime })
+        }
+
+        fun comparatorForRecurringWeekdays(): Comparator<EventSheetTimeSlot> {
+            return compareBy({ it.date.dayOfWeek.ordinal }, { it.startTime }, { it.endTime })
+        }
+    }
+
     override fun compareTo(other: EventSheetTimeSlot): Int {
         return compareValuesBy(this, other, { it.date }, { it.startTime }, { it.endTime })
     }
@@ -27,19 +37,23 @@ data class EventSheetTimeSlot(
     ): List<EventSheetTimeSlot> {
         val startDateTime = date.atTime(startTime)
             .changeWithTimeZone(from = from, to = to)
-        val endDateTime = date.atTime(endTime)
+        var endDateTime = date.atTime(endTime)
             .changeWithTimeZone(from = from, to = to)
+        if (endDateTime.toLocalTime() == TimeUtils.MIN_LOCAL_TIME) {
+            endDateTime = endDateTime.toLocalDate().minusDays(1).atTime(TimeUtils.MAX_LOCAL_TIME)
+        }
         val dateRange = startDateTime.untilDays(endDateTime)
 
-        return dateRange
+        val eventSheetTimeSlots = dateRange
             .mapIndexed { idx, date ->
                 EventSheetTimeSlot(
                     eventSheetId = this.eventSheetId,
                     date = date,
-                    startTime = if (idx == 0) startDateTime.toLocalTime() else LocalTime.MIN,
-                    endTime = if (idx == dateRange.size - 1) endDateTime.toLocalTime() else LocalTime.MAX
+                    startTime = if (idx == 0) startDateTime.toLocalTime() else TimeUtils.MIN_LOCAL_TIME,
+                    endTime = if (idx == dateRange.size - 1) endDateTime.toLocalTime() else TimeUtils.MAX_LOCAL_TIME
                 )
             }
+        return eventSheetTimeSlots
     }
 
     fun contains(participantSlot: ParticipantAvailableTimeSlot): Boolean {

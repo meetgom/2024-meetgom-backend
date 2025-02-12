@@ -1,6 +1,5 @@
 package com.meetgom.backend.domain.service
 
-import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.data.repository.ParticipantRepository
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
@@ -104,8 +103,14 @@ class ParticipantService(
             }
         }
         availableTimeSlots.forEach { timeSlot ->
-            val res = eventSheet.eventSheetTimeSlots.any {
-                println("eventSheetTimeSlots: ${it.date} ${it.date.dayOfWeek} ${it.startTime} ${it.endTime} ${it.contains(timeSlot)} / ${timeSlot.date} ${timeSlot.startTime} ${timeSlot.endTime}")
+            val res = !eventSheet.eventSheetTimeSlots.any {
+                println(
+                    "eventSheetTimeSlots: ${it.date} ${it.date.dayOfWeek} ${it.startTime} ${it.endTime} ${
+                        it.contains(
+                            timeSlot
+                        )
+                    } / ${timeSlot.date} ${timeSlot.startTime} ${timeSlot.endTime}"
+                )
                 it.contains(timeSlot)
             }
             print("include res: $res")

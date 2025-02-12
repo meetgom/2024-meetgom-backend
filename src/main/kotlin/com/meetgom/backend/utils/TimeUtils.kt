@@ -8,8 +8,11 @@ import java.time.format.DateTimeFormatter
 
 class TimeUtils {
     companion object {
-        val timeRegex: Regex = Regex("^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$")
-        val timeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        private val timeRegex: Regex = Regex("^(([01]?[0-9]|2[0-3]):[0-5][0-9])|(24:00)$")
+        private val timeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        val MIN_LOCAL_TIME: LocalTime = LocalTime.of(0, 0, 0)
+        val MAX_LOCAL_TIME: LocalTime = LocalTime.of(23, 59, 59)
 
         fun timeStringToLocalTime(
             timeString: String,
@@ -18,29 +21,22 @@ class TimeUtils {
             if (!timeRegex.matches(trimmedTimeString))
                 throw CommonExceptions.INVALID_TIME_FORMAT.toException()
             if (trimmedTimeString == "24:00")
-                return LocalTime.MAX
+                return TimeUtils.MAX_LOCAL_TIME
             return LocalTime.parse(trimmedTimeString)
         }
 
         fun localTimeToTimeString(localTime: LocalTime): String {
-            if (localTime == LocalTime.MAX)
+            if (localTime == TimeUtils.MAX_LOCAL_TIME)
                 return "24:00"
             val formatted = localTime.format(timeFormat)
             return formatted
         }
 
-        fun getClosestDayOfWeek(weekday: DayOfWeek): LocalDate {
+        fun getDayOfNextWeek(weekday: DayOfWeek): LocalDate {
             val today = LocalDate.now()
             val dayOfWeek = today.dayOfWeek
-            val daysToTarget = weekday.ordinal - dayOfWeek.ordinal
-
-            return today.plusDays(
-                when {
-                    daysToTarget < 0 -> daysToTarget + 7  // 이전 주의 해당 요일
-                    daysToTarget > 0 -> daysToTarget  // 다음 주의 해당 요일
-                    else -> 0  // 오늘이 이미 해당 요일
-                }.toLong()
-            )
+            val daysUntilNextWeek = 7 - dayOfWeek.ordinal + weekday.ordinal
+            return today.plusDays(daysUntilNextWeek.toLong())
         }
     }
 }

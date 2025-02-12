@@ -9,8 +9,9 @@ import com.meetgom.backend.exception.exceptions.AuthExceptions
 import com.meetgom.backend.exception.exceptions.EventSheetExceptions
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.domain.model.user.User
+import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.type.ParticipantRoleType
-import com.meetgom.backend.utils.extends.alignTimeSlots
+import com.meetgom.backend.utils.extends.sorted
 
 data class Participant(
     val eventSheetCode: String,
@@ -19,13 +20,16 @@ data class Participant(
     val timeZone: TimeZone,
     val availableTimeSlots: List<ParticipantAvailableTimeSlot>
 ) {
-    fun convertTimeZone(to: TimeZone): Participant {
+    fun convertTimeZone(
+        to: TimeZone,
+        eventSheetType: EventSheetType
+    ): Participant {
         val availableTimeSlots = this.availableTimeSlots.map {
             it.convertTimeZone(
                 from = this.timeZone,
                 to = timeZone,
             )
-        }.flatten().alignTimeSlots()
+        }.flatten().sorted(eventSheetType = eventSheetType)
 
         return Participant(
             eventSheetCode = eventSheetCode,
@@ -36,8 +40,8 @@ data class Participant(
         )
     }
 
-    private fun convertSystemDefaultTimeZone(): Participant {
-        return this.convertTimeZone(TimeZone.defaultTimeZone)
+    private fun convertSystemDefaultTimeZone(eventSheetType: EventSheetType): Participant {
+        return this.convertTimeZone(TimeZone.defaultTimeZone, eventSheetType = eventSheetType)
     }
 
     fun toEntity(
@@ -45,8 +49,8 @@ data class Participant(
         userEntity: UserEntity,
         participantRoleEntity: ParticipantRoleEntity
     ): ParticipantEntity {
-        val participant = this.convertSystemDefaultTimeZone()
-        if (eventSheetEntity.eventCodeEntity.eventCode != participant.eventSheetCode)
+        val participant = this.convertSystemDefaultTimeZone(eventSheetType = eventSheetEntity.eventSheetType)
+        if (eventSheetEntity.eventSheetCodeEntity.eventCode != participant.eventSheetCode)
             throw EventSheetExceptions.UNMATCHED_EVENT_SHEET_CODE.toException()
         if (userEntity.id != participant.user.id)
             throw AuthExceptions.UNMATCHED_USER.toException()

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface EventSheetRepository : JpaRepository<EventSheetEntity, Long> {
-    @Query("SELECT e FROM event_sheet e WHERE e.eventCodeEntity.eventCode = :eventSheetCodeValue")
+    @Query("SELECT e FROM event_sheet e WHERE e.eventSheetCodeEntity.eventCode = :eventSheetCodeValue")
     fun findByEventCode(@Param("eventSheetCodeValue") eventSheetCodeValue: String): EventSheetEntity?
 }

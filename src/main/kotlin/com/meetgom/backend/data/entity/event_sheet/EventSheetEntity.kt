@@ -30,8 +30,8 @@ class EventSheetEntity(
         cascade = [CascadeType.ALL],
         fetch = FetchType.LAZY
     )
-    @JoinColumn(name = "event_code")
-    val eventCodeEntity: EventCodeEntity,
+    @JoinColumn(name = "event_sheet_code")
+    val eventSheetCodeEntity: EventCodeEntity,
 
     @ManyToOne
     @JoinColumn(name = "time_zone_id")
@@ -77,7 +77,7 @@ class EventSheetEntity(
     var participantEntities: MutableList<ParticipantEntity>? = null,
 ) {
     fun toDomain(): EventSheet {
-        return EventSheet(
+        val eventSheet = EventSheet(
             id = this.id,
             name = this.name,
             description = this.description,
@@ -89,9 +89,10 @@ class EventSheetEntity(
             manualActive = this.manualActive,
             timeZone = this.timeZoneEntity.toDomain(),
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
-            eventSheetCode = eventCodeEntity.toDomain(),
+            eventSheetCode = eventSheetCodeEntity.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() },
             participants = this.participantEntities?.map { it.toDomain() } ?: emptyList(),
-        ).convertTimeZone()
+        )
+        return eventSheet.convertTimeZone()
     }
 }

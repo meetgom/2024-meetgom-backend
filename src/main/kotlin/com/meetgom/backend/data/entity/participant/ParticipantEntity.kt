@@ -1,7 +1,6 @@
 package com.meetgom.backend.data.entity.participant
 
 import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
@@ -43,7 +42,7 @@ class ParticipantEntity(
 ) {
     fun toDomain(): Participant {
         return Participant(
-            eventSheetCode = this.eventSheetEntity.eventCodeEntity.eventCode,
+            eventSheetCode = this.eventSheetEntity.eventSheetCodeEntity.eventCode,
             user = user.toDomain(),
             role = role.participantRole,
             timeZone = timeZoneEntity.toDomain(),
