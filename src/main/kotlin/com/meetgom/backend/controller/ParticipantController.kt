@@ -6,6 +6,7 @@ import com.meetgom.backend.controller.http.request.PostStandardParticipantReques
 import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.model.participant.TempParticipantAvailableTimeSlot
 import com.meetgom.backend.domain.service.ParticipantService
+import com.meetgom.backend.exception.exceptions.ParticipantExceptions
 import com.meetgom.backend.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -21,6 +22,8 @@ class ParticipantController(private val participantService: ParticipantService) 
         @PathVariable eventSheetCode: String,
         @RequestBody postAnonymousParticipantRequest: PostAnonymousParticipantRequest,
     ): HttpResponse<ParticipantResponse> {
+        if (!postAnonymousParticipantRequest.passwordMatch())
+            throw ParticipantExceptions.CONFIRM_PASSWORD_NOT_MATCH.toException()
         val participant = participantService.createAnonymousParticipant(
             eventSheetCode = eventSheetCode,
             userName = postAnonymousParticipantRequest.userName,
@@ -39,7 +42,7 @@ class ParticipantController(private val participantService: ParticipantService) 
     }
 
     @PostMapping("/standard/{eventSheetCode}")
-    @Operation(summary = "participate event sheet for standard user")
+    @Operation(summary = "participate event sheet for standard user (미완료 / 토큰 받아서 처리 예정)")
     fun postStandardParticipant(
         @PathVariable eventSheetCode: String,
         @RequestBody postStandardParticipantRequest: PostStandardParticipantRequest,

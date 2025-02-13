@@ -104,6 +104,12 @@ data class EventSheetResponse(
     val updatedAt: ZonedDateTime?,
 
     @Schema(
+        title = "Participant Time Slot Table",
+        description = "전체 참여자 시간 슬롯 테이블",
+    )
+    val timeSlotTable: List<ParticipantTimeSlotTableResponse>,
+
+    @Schema(
         title = "Participant",
         description = "EventSheet 참여자",
     )

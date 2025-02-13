@@ -18,6 +18,35 @@ data class PostAnonymousParticipantRequest(
         defaultValue = "password"
     )
     val password: String,
+
+    @Schema(
+        title = "confirmPassword",
+        description = "비밀번호 확인",
+        required = true,
+        defaultValue = "confirmPassword"
+    )
+    val confirmPassword: String,
+
+    @Schema(
+        title = "region",
+        description = "timezone_region",
+        defaultValue = "Asia/Seoul"
+    )
+    val region: String?,
+    @Schema(
+        title = "Available Time Slots",
+        description = "사용자 가능 시간 구간",
+        required = true
+    )
+    val availableTimeSlots: List<PostParticipantAvailableTimeSlotRequest>,
+) {
+    fun passwordMatch(): Boolean {
+        return password == confirmPassword
+    }
+}
+
+@Schema(title = "Post Standard Participant Request")
+data class PostStandardParticipantRequest(
     @Schema(
         title = "region",
         description = "timezone_region",

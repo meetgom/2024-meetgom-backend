@@ -14,6 +14,7 @@ import com.meetgom.backend.type.ParticipantRoleType
 import com.meetgom.backend.utils.extends.sorted
 
 data class Participant(
+    val id: Long? = null,
     val eventSheetCode: String,
     val user: User,
     val role: ParticipantRoleType,
@@ -32,6 +33,7 @@ data class Participant(
         }.flatten().sorted(eventSheetType = eventSheetType)
 
         return Participant(
+            id = id,
             eventSheetCode = eventSheetCode,
             user = user,
             role = role,
@@ -69,13 +71,14 @@ data class Participant(
         return participantEntity
     }
 
-    fun toResponse(): ParticipantResponse {
+    fun toResponse(hideDate: Boolean = false): ParticipantResponse {
         return ParticipantResponse(
+            id = id,
             eventSheetCode = eventSheetCode,
             user = user.toResponse(),
             role = role,
             timeZone = timeZone.region,
-            availableTimeSlots = availableTimeSlots.map { it.toResponse() }
+            availableTimeSlots = availableTimeSlots.map { it.toResponse(hideDate = hideDate) }
         )
     }
 }

@@ -13,6 +13,6 @@ interface EventSheetRepository : JpaRepository<EventSheetEntity, Long> {
     fun findByEventSheetCode(@Param("eventSheetCodeValue") eventSheetCodeValue: String): EventSheetEntity?
 
     @Modifying
-    @Query("UPDATE event_sheet e SET e.deletedAt=CURRENT_TIMESTAMP WHERE e.eventSheetCodeEntity.eventSheetCode = :eventSheetCodeValue")
+    @Query("UPDATE event_sheet e SET e.deletedAt = CURRENT_TIMESTAMP WHERE e.eventSheetCodeEntity.eventSheetCode = :eventSheetCodeValue")
     fun deleteByEventSheetCode(@Param("eventSheetCodeValue") eventSheetCodeValue: String): Int?
 }

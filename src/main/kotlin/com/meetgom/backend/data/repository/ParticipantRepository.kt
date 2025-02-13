@@ -11,6 +11,8 @@ interface ParticipantRepository : JpaRepository<ParticipantEntity, Long> {
     fun findByEventSheetCode(@Param("eventSheetCode") eventSheetCode: String): List<ParticipantEntity>
 
     @Modifying
-    @Query("UPDATE participant p SET p.userEntity.deletedAt=CURRENT_TIMESTAMP WHERE p.eventSheetEntity.eventSheetCodeEntity.eventSheetCode = :eventSheetCode AND p.userEntity.userType='ANONYMOUS'")
+    @Query("UPDATE user u SET u.deletedAt = CURRENT_TIMESTAMP WHERE  u.userType = 'ANONYMOUS' AND u.id IN (SELECT p.userEntity.id FROM participant p WHERE p.eventSheetEntity.eventSheetCodeEntity.eventSheetCode = :eventSheetCode)")
     fun deleteAnonymousUserEntityByEventSheetCode(@Param("eventSheetCode") eventSheetCode: String): Int?
 }
+
+//update participant p join user u on u.id=p.user_id join event_sheet e on e.id=p.event_sheet_id set deleted_at=current_timestamp(6) where ese1_0.event_sheet_code=? and ue1_0.user_type='ANONYMOUS'

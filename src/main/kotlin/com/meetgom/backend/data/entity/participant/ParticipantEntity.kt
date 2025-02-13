@@ -43,6 +43,7 @@ class ParticipantEntity(
 ) {
     fun toDomain(): Participant {
         return Participant(
+            id = this.id,
             eventSheetCode = this.eventSheetEntity.eventSheetCodeEntity.eventSheetCode,
             user = userEntity.toDomain(),
             role = roleEntity.participantRole,

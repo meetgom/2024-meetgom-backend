@@ -3,8 +3,10 @@ package com.meetgom.backend.domain.model.event_sheet
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.controller.http.response.EventSheetResponse
+import com.meetgom.backend.controller.http.response.ParticipantTimeSlotTableResponse
 import com.meetgom.backend.domain.model.participant.Participant
 import com.meetgom.backend.type.EventSheetType
+import com.meetgom.backend.utils.TimeUtils
 import com.meetgom.backend.utils.extends.sorted
 import com.meetgom.backend.utils.extends.toTimeZone
 import java.time.ZonedDateTime
@@ -101,6 +103,7 @@ data class EventSheet(
     }
 
     fun toResponse(): EventSheetResponse {
+        val hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS
         return EventSheetResponse(
             id = this.id,
             eventSheetCode = this.eventSheetCode.eventSheetCode,
@@ -112,11 +115,46 @@ data class EventSheet(
             activeEndDateTime = this.activeEndDateTime?.toLocalDateTime(),
             manualActive = this.manualActive,
             isActive = this.isActive(),
-            eventSheetTimeSlots = this.eventSheetTimeSlots.map { it.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS) },
+            eventSheetTimeSlots = this.eventSheetTimeSlots.map { it.toResponse(hideDate = hideDate) },
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             timeZone = this.timeZone.region,
-            participant = participants.map { it.toResponse() }
+            participant = participants.map { it.toResponse(hideDate = hideDate) },
+            timeSlotTable = participantsToTimeSlotTableResponse(participants, hideDate = hideDate),
         )
     }
+
+    //MARK: - Private Methods
+    private fun participantsToTimeSlotTableResponse(
+        participants: List<Participant>,
+        hideDate: Boolean = false
+    ): List<ParticipantTimeSlotTableResponse> {
+        val timeSlots = participants.flatMap { it.availableTimeSlots }
+        val dateToTimes = timeSlots
+            .groupBy { it.date }
+            .mapValues { (_, slots) ->
+                slots.flatMap { listOf(it.startTime, it.endTime) }
+                    .distinct()
+                    .sorted()
+            }
+        return dateToTimes.flatMap { (date, timePoints) ->
+            timePoints.zipWithNext { start, end ->
+                val matchedParticipants = participants.filter { participant ->
+                    participant.availableTimeSlots.any {
+                        it.date == date && it.startTime <= start && it.endTime >= end
+                    }
+                }
+                ParticipantTimeSlotTableResponse(
+                    date = if (hideDate) null else date,
+                    dayOfWeek = date.dayOfWeek.name,
+                    startTime = TimeUtils.localTimeToTimeString(start),
+                    endTime = TimeUtils.localTimeToTimeString(end),
+                    availableParticipantsRatio = (matchedParticipants.size.toDouble() / participants.size) * 100,
+                    availableParticipantsCount = matchedParticipants.size,
+                    participants = matchedParticipants.map { it.user.userName }
+                )
+            }
+        }
+    }
+
 }

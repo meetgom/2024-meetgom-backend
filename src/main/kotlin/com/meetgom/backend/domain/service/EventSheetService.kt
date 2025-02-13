@@ -7,8 +7,10 @@ import com.meetgom.backend.exception.exceptions.EventSheetExceptions
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.domain.model.event_sheet.EventSheetCode
 import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
+import com.meetgom.backend.domain.model.participant.Participant
 import com.meetgom.backend.domain.service.common.CommonEventSheetService
 import com.meetgom.backend.domain.service.common.CommonParticipantService
+import com.meetgom.backend.exception.exceptions.ParticipantExceptions
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import com.meetgom.backend.utils.extends.sorted
@@ -66,16 +68,33 @@ class EventSheetService(
         eventSheetCode: String,
         region: String?,
     ): EventSheet {
-        val eventSheetA =
+        val eventSheet =
             commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
-
-        println("readedEntity: $eventSheetA")
-        for (eventSheetTimeSlot in eventSheetA.eventSheetTimeSlotEntities) {
-            println("${eventSheetTimeSlot.eventSheetTimeSlotPrimaryKey.date.dayOfWeek} ${eventSheetTimeSlot.eventSheetTimeSlotPrimaryKey.startTime} ${eventSheetTimeSlot.endTime}")
-        }
-        val eventSheet = eventSheetA.toDomain()
+                .toDomain()
         val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
         return convertedEventSheet
+    }
+
+    @Transactional
+    fun deleteEventSheetByEventSheetCode(eventSheetCode: String): Boolean {
+        commonEventSheetService.deleteEventSheetEntityByEventSheetCode(eventSheetCodeValue = eventSheetCode)
+        commonParticipantService.deleteAnonymousUserEntityByEventSheetCode(eventSheetCode = eventSheetCode)
+        return true
+    }
+
+    @Transactional
+    fun readParticipantInEventSheet(
+        eventSheetCode: String,
+        participantId: Long,
+        region: String?
+    ): Pair<EventSheetType, Participant> {
+        val eventSheet =
+            commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
+                .toDomain()
+        val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
+        val participant = convertedEventSheet.participants.find { it.id == participantId }
+            ?: throw ParticipantExceptions.PARTICIPANT_NOT_FOUND.toException()
+        return Pair(convertedEventSheet.eventSheetType, participant)
     }
 
     // MARK: - Private Methods
@@ -92,13 +111,6 @@ class EventSheetService(
         throw EventSheetExceptions.MAX_EVENT_SHEET_CODES_REACHED.toException()
     }
 
-    fun deleteEventSheetByEventSheetCode(eventSheetCode: String): Boolean {
-        commonEventSheetService.deleteEventSheetEntityByEventSheetCode(eventSheetCodeValue = eventSheetCode)
-        commonParticipantService.deleteAnonymousUserEntityByEventSheetCode(eventSheetCode = eventSheetCode)
-        return true
-    }
-
-    // MARK: - Private Methods
     private fun validateEventSheetTimeSlots(
         eventSheetType: EventSheetType,
         eventSheetTimeSlots: List<EventSheetTimeSlot>
