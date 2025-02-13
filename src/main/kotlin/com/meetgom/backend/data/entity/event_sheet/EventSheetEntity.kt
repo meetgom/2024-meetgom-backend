@@ -56,6 +56,9 @@ class EventSheetEntity(
     @JsonManagedReference
     var eventSheetTimeSlotEntities: MutableList<EventSheetTimeSlotEntity>,
 
+    @Column(name = "deleted_at")
+    val deletedAt: ZonedDateTime? = null,
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: ZonedDateTime? = null,
@@ -91,7 +94,8 @@ class EventSheetEntity(
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventSheetCode = eventSheetCodeEntity.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() },
-            participants = this.participantEntities?.map { it.toDomain() } ?: emptyList(),
+            participants = this.participantEntities?.mapNotNull { if (it.userEntity.deletedAt == null) it.toDomain() else null }
+                ?: emptyList(),
         )
         return eventSheet.convertTimeZone()
     }

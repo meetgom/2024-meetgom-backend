@@ -22,6 +22,9 @@ class UserEntity(
     @Enumerated(EnumType.STRING)
     val userType: UserType,
 
+    @Column(name = "deleted_at")
+    val deletedAt: ZonedDateTime? = null,
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: ZonedDateTime? = null,

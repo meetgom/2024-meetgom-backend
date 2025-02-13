@@ -1,6 +1,7 @@
 package com.meetgom.backend.domain.service
 
 import com.meetgom.backend.data.repository.ParticipantRepository
+import com.meetgom.backend.data.repository.UserRepository
 import com.meetgom.backend.domain.model.common.TimeZone
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.domain.model.participant.Participant
@@ -13,22 +14,22 @@ import com.meetgom.backend.exception.exceptions.ParticipantExceptions
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.type.ParticipantRoleType
 import com.meetgom.backend.type.UserType
-import com.meetgom.backend.utils.TimeUtils
 import com.meetgom.backend.utils.extends.sorted
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ParticipantService(
     private val commonEventSheetService: CommonEventSheetService,
     private val commonParticipantService: CommonParticipantService,
     private val commonUserService: CommonUserService,
-    private val participantRepository: ParticipantRepository
+    private val participantRepository: ParticipantRepository,
+    private val userRepository: UserRepository
 ) {
-
     @Transactional
     fun createAnonymousParticipant(
         eventSheetCode: String,
@@ -64,6 +65,44 @@ class ParticipantService(
         ).toEntity(
             eventSheetEntity = eventSheetEntity,
             userEntity = anonymousUserEntity,
+            participantRoleEntity = participantRoleEntity
+        )
+        return participantRepository.save(participantEntity).toDomain()
+    }
+
+    fun createStandardParticipant(
+        eventSheetCode: String,
+        region: String?,
+        tempAvailableTimeSlots: List<TempParticipantAvailableTimeSlot>,
+    ): Participant {
+        val eventSheetEntity = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCode)
+        val eventSheet = eventSheetEntity.toDomain()
+        val timeZone =
+            if (region == null) eventSheet.hostTimeZone else commonEventSheetService.findTimeZoneEntityByRegionWithException(
+                region = region
+            ).toDomain()
+
+        // FIXME: - jwt token으로 user 식별 필요
+        val userEntity = userRepository.findById(1).getOrNull()
+            ?: throw ParticipantExceptions.USER_NOT_FOUND.toException()
+        val user = userEntity.toDomain()
+        val role = ParticipantRoleType.PARTICIPANT
+        val participantRoleEntity = commonParticipantService.findPariticipantRoleEntityByRoleTypeWithException(role)
+        val availableTimeSlots = validateTemporaryAvailableTimeSlots(
+            eventSheet = eventSheet,
+            timeZone = timeZone,
+            tempAvailableTimeSlots = tempAvailableTimeSlots
+        )
+
+        val participantEntity = Participant(
+            eventSheetCode = eventSheetCode,
+            user = user,
+            role = role,
+            timeZone = timeZone,
+            availableTimeSlots = availableTimeSlots
+        ).toEntity(
+            eventSheetEntity = eventSheetEntity,
+            userEntity = userEntity,
             participantRoleEntity = participantRoleEntity
         )
         return participantRepository.save(participantEntity).toDomain()

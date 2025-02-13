@@ -13,7 +13,7 @@ data class TimeZone(
 ) {
     companion object {
         private val defaultJavaTimeZone: JavaTimeZone = JavaTimeZone.getDefault()
-        val defaultZoneId: ZoneId = ZoneId.systemDefault()
+        private val defaultZoneId: ZoneId = ZoneId.systemDefault()
         val defaultTimeZone: TimeZone = TimeZone(
             region = defaultZoneId.id,
             offset = "GMT${ZonedDateTime.now(defaultZoneId).offset}",

@@ -8,6 +8,7 @@ import com.meetgom.backend.data.entity.user.UserEntity
 import com.meetgom.backend.domain.model.participant.Participant
 import jakarta.persistence.*
 
+
 @Entity(name = "participant")
 class ParticipantEntity(
     @Id
@@ -21,11 +22,11 @@ class ParticipantEntity(
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    val user: UserEntity,
+    val userEntity: UserEntity,
 
     @ManyToOne
     @JoinColumn(name = "participant_role")
-    val role: ParticipantRoleEntity,
+    val roleEntity: ParticipantRoleEntity,
 
     @ManyToOne
     @JoinColumn(name = "participant_time_zone_id")
@@ -43,8 +44,8 @@ class ParticipantEntity(
     fun toDomain(): Participant {
         return Participant(
             eventSheetCode = this.eventSheetEntity.eventSheetCodeEntity.eventSheetCode,
-            user = user.toDomain(),
-            role = role.participantRole,
+            user = userEntity.toDomain(),
+            role = roleEntity.participantRole,
             timeZone = timeZoneEntity.toDomain(),
             availableTimeSlots = availableTimeSlotEntities.map { it.toDomain() }
         )

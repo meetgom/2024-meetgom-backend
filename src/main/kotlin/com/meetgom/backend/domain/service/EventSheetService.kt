@@ -8,6 +8,7 @@ import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.domain.model.event_sheet.EventSheetCode
 import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
 import com.meetgom.backend.domain.service.common.CommonEventSheetService
+import com.meetgom.backend.domain.service.common.CommonParticipantService
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import com.meetgom.backend.utils.extends.sorted
@@ -18,6 +19,7 @@ import java.time.LocalDateTime
 @Service
 class EventSheetService(
     private val commonEventSheetService: CommonEventSheetService,
+    private val commonParticipantService: CommonParticipantService,
     private val eventSheetRepository: EventSheetRepository,
     private val eventSheetCodeRepository: EventSheetCodeRepository,
     private val eventSheetCodeWordRepository: EventSheetCodeWordRepository
@@ -90,9 +92,10 @@ class EventSheetService(
         throw EventSheetExceptions.MAX_EVENT_SHEET_CODES_REACHED.toException()
     }
 
-    fun deleteEventSheetByEventSheetCode(eventSheetCode: String) {
-        val eventSheetEntity = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
-        eventSheetRepository.delete(eventSheetEntity)
+    fun deleteEventSheetByEventSheetCode(eventSheetCode: String): Boolean {
+        commonEventSheetService.deleteEventSheetEntityByEventSheetCode(eventSheetCodeValue = eventSheetCode)
+        commonParticipantService.deleteAnonymousUserEntityByEventSheetCode(eventSheetCode = eventSheetCode)
+        return true
     }
 
     // MARK: - Private Methods

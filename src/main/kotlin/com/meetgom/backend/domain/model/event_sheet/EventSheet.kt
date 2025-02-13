@@ -45,6 +45,9 @@ data class EventSheet(
                 to = timeZone,
             )
         }.flatten().sorted(eventSheetType = eventSheetType)
+        val participants = this.participants.map {
+            it.convertTimeZone(to = timeZone, eventSheetType = eventSheetType)
+        }
 
         return EventSheet(
             id = this.id,
@@ -60,7 +63,7 @@ data class EventSheet(
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
             timeZone = timeZone,
-            participants = this.participants,
+            participants = participants,
         )
     }
 

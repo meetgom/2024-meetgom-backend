@@ -27,7 +27,7 @@ data class Participant(
         val availableTimeSlots = this.availableTimeSlots.map {
             it.convertTimeZone(
                 from = this.timeZone,
-                to = timeZone,
+                to = to,
             )
         }.flatten().sorted(eventSheetType = eventSheetType)
 
@@ -58,8 +58,8 @@ data class Participant(
             throw EventSheetExceptions.UNMATCHED_ROLE_TYPE.toException()
         val participantEntity = ParticipantEntity(
             eventSheetEntity = eventSheetEntity,
-            user = userEntity,
-            role = participantRoleEntity,
+            userEntity = userEntity,
+            roleEntity = participantRoleEntity,
             timeZoneEntity = participant.timeZone.toEntity(),
             availableTimeSlotEntities = mutableListOf()
         )

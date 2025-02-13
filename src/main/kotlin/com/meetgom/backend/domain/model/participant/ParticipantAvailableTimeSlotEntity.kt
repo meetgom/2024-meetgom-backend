@@ -32,10 +32,6 @@ data class ParticipantAvailableTimeSlot(
         return compareValuesBy(this, other, { it.date }, { it.startTime }, { it.endTime })
     }
 
-    fun setDate(): ParticipantAvailableTimeSlot {
-        return this.copy(date = LocalDate.now())
-    }
-
     fun convertTimeZone(
         from: TimeZone,
         to: TimeZone
@@ -49,7 +45,7 @@ data class ParticipantAvailableTimeSlot(
         }
         val dateRange = startDateTime.untilDays(endDateTime)
 
-        return dateRange
+        val participantAvailableTimeSlots = dateRange
             .mapIndexed { idx, date ->
                 ParticipantAvailableTimeSlot(
                     participantId = this.participantId,
@@ -58,6 +54,7 @@ data class ParticipantAvailableTimeSlot(
                     endTime = if (idx == dateRange.size - 1) endDateTime.toLocalTime() else TimeUtils.MAX_LOCAL_TIME
                 )
             }
+        return participantAvailableTimeSlots
     }
 
     // MARK: - Converters
