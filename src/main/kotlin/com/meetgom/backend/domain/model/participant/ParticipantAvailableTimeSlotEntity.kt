@@ -32,6 +32,10 @@ data class ParticipantAvailableTimeSlot(
         return compareValuesBy(this, other, { it.date }, { it.startTime }, { it.endTime })
     }
 
+    fun setDate(): ParticipantAvailableTimeSlot {
+        return this.copy(date = LocalDate.now())
+    }
+
     fun convertTimeZone(
         from: TimeZone,
         to: TimeZone

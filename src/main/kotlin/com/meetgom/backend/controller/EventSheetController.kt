@@ -58,14 +58,23 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
 
     @GetMapping(path = ["/{eventSheetCode}"])
     @Operation(summary = "read Event Sheet")
-    fun getEventSheetByEventCode(
+    fun getEventSheetByEventSheetCode(
         @PathVariable eventSheetCode: String,
         @RequestParam region: String?,
     ): HttpResponse<EventSheetResponse> {
-        val eventSheet = eventSheetService.readEventSheetByEventCode(
+        val eventSheet = eventSheetService.readEventSheetByEventSheetCode(
             eventSheetCode = eventSheetCode,
             region = region,
         )
         return HttpResponse.of(eventSheet.toResponse())
+    }
+
+    @DeleteMapping(path = ["/{eventSheetCode}"])
+    @Operation(summary = "delete Event Sheet")
+    fun deleteEventSheetByEventSheetCode(
+        @PathVariable eventSheetCode: String,
+    ): HttpResponse<Unit> {
+        eventSheetService.deleteEventSheetByEventSheetCode(eventSheetCode)
+        return HttpResponse.of(Unit)
     }
 }

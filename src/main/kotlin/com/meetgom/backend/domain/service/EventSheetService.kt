@@ -1,8 +1,6 @@
 package com.meetgom.backend.domain.service
 
-import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotEntity
-import com.meetgom.backend.data.entity.event_sheet.EventSheetTimeSlotPrimaryKey
-import com.meetgom.backend.data.repository.EventCodeWordRepository
+import com.meetgom.backend.data.repository.EventSheetCodeWordRepository
 import com.meetgom.backend.data.repository.EventSheetCodeRepository
 import com.meetgom.backend.data.repository.EventSheetRepository
 import com.meetgom.backend.exception.exceptions.EventSheetExceptions
@@ -16,18 +14,17 @@ import com.meetgom.backend.utils.extends.sorted
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Service
 class EventSheetService(
     private val commonEventSheetService: CommonEventSheetService,
     private val eventSheetRepository: EventSheetRepository,
     private val eventSheetCodeRepository: EventSheetCodeRepository,
-    private val eventSheetCodeWordRepository: EventCodeWordRepository
+    private val eventSheetCodeWordRepository: EventSheetCodeWordRepository
 ) {
 
     companion object {
-        const val EVENT_CODE_MAX_TRY_COUNT = 1000
+        const val EVENT_SHEET_CODE_MAX_TRY_COUNT = 1000
     }
 
     @Transactional
@@ -45,10 +42,10 @@ class EventSheetService(
     ): EventSheet {
         val hostTimeZone =
             commonEventSheetService.findTimeZoneEntityByRegionWithException(hostTimeZoneRegion).toDomain()
-        val eventCode = createRandomEventSheetCode(wordCount = wordCount)
+        val eventSheetCode = createRandomEventSheetCode(wordCount = wordCount)
         val validEventSheetTimeSlots = validateEventSheetTimeSlots(eventSheetType, eventSheetTimeSlots)
         val eventSheetEntity = EventSheet(
-            eventSheetCode = eventCode,
+            eventSheetCode = eventSheetCode,
             name = name,
             description = description,
             eventSheetType = eventSheetType,
@@ -63,7 +60,7 @@ class EventSheetService(
         return eventSheetRepository.save(eventSheetEntity).toDomain()
     }
 
-    fun readEventSheetByEventCode(
+    fun readEventSheetByEventSheetCode(
         eventSheetCode: String,
         region: String?,
     ): EventSheet {
@@ -81,18 +78,24 @@ class EventSheetService(
 
     // MARK: - Private Methods
     private fun createRandomEventSheetCode(wordCount: Int = 3): EventSheetCode {
-        for (i in 0 until EVENT_CODE_MAX_TRY_COUNT) {
-            val eventCodeWords = eventSheetCodeWordRepository.findRandomEventCodeWords(wordCount = wordCount)
-            val eventCodeValue = eventCodeWords.joinToString(separator = "-") { it.word }
-            if (eventSheetCodeRepository.findByEventSheetCode(eventCodeValue) == null) {
+        for (i in 0 until EVENT_SHEET_CODE_MAX_TRY_COUNT) {
+            val eventSheetCodeWords = eventSheetCodeWordRepository.findRandomEventSheetCodeWords(wordCount = wordCount)
+            val eventSheetCodeValue = eventSheetCodeWords.joinToString(separator = "-") { it.word }
+            if (eventSheetCodeRepository.findByEventSheetCode(eventSheetCodeValue) == null) {
                 return EventSheetCode(
-                    eventCode = eventCodeValue
+                    eventSheetCode = eventSheetCodeValue
                 )
             }
         }
-        throw EventSheetExceptions.MAX_EVENT_CODES_REACHED.toException()
+        throw EventSheetExceptions.MAX_EVENT_SHEET_CODES_REACHED.toException()
     }
 
+    fun deleteEventSheetByEventSheetCode(eventSheetCode: String) {
+        val eventSheetEntity = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
+        eventSheetRepository.delete(eventSheetEntity)
+    }
+
+    // MARK: - Private Methods
     private fun validateEventSheetTimeSlots(
         eventSheetType: EventSheetType,
         eventSheetTimeSlots: List<EventSheetTimeSlot>

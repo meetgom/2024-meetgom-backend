@@ -20,7 +20,7 @@ class MainController {
         val running = "Server is running"
         val startedAt = ApplicationStartedEventListener.startTime
         val gitBranch = GitUtils.getGitBranch()
-        val latestGitLog = GitUtils.getGitLogs().first()
+        val latestGitLog = GitUtils.getGitLogs().firstOrNull() ?: "Git log is not available"
         return HttpResponse.of(
             ServerStatusResponse(
                 status = running,

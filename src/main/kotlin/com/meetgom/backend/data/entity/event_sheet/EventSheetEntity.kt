@@ -31,7 +31,7 @@ class EventSheetEntity(
         fetch = FetchType.LAZY
     )
     @JoinColumn(name = "event_sheet_code")
-    val eventSheetCodeEntity: EventCodeEntity,
+    val eventSheetCodeEntity: EventSheetCodeEntity,
 
     @ManyToOne
     @JoinColumn(name = "time_zone_id")

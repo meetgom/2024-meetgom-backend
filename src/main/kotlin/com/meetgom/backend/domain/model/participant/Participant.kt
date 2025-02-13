@@ -50,7 +50,7 @@ data class Participant(
         participantRoleEntity: ParticipantRoleEntity
     ): ParticipantEntity {
         val participant = this.convertSystemDefaultTimeZone(eventSheetType = eventSheetEntity.eventSheetType)
-        if (eventSheetEntity.eventSheetCodeEntity.eventCode != participant.eventSheetCode)
+        if (eventSheetEntity.eventSheetCodeEntity.eventSheetCode != participant.eventSheetCode)
             throw EventSheetExceptions.UNMATCHED_EVENT_SHEET_CODE.toException()
         if (userEntity.id != participant.user.id)
             throw AuthExceptions.UNMATCHED_USER.toException()

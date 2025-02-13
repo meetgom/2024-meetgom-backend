@@ -20,7 +20,7 @@ class CommonEventSheetServiceImpl(
     private val timeZoneRepository: TimeZoneRepository
 ) : CommonEventSheetService {
     override fun findEventSheetEntityByCodeWithException(eventSheetCodeValue: String): EventSheetEntity {
-        return eventSheetRepository.findByEventCode(eventSheetCodeValue)
+        return eventSheetRepository.findByEventSheetCode(eventSheetCodeValue)
             ?: throw EventSheetExceptions.EVENT_SHEET_NOT_FOUND.toException()
     }
 

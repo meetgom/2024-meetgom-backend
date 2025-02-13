@@ -1,14 +1,14 @@
 package com.meetgom.backend.domain.model.event_sheet
 
-import com.meetgom.backend.data.entity.event_sheet.EventCodeEntity
+import com.meetgom.backend.data.entity.event_sheet.EventSheetCodeEntity
 
 data class EventSheetCode(
-    val eventCode: String,
+    val eventSheetCode: String,
     val eventSheet: EventSheet? = null,
 ) {
-    fun toEntity(): EventCodeEntity {
-        return EventCodeEntity(
-            eventCode = this.eventCode,
+    fun toEntity(): EventSheetCodeEntity {
+        return EventSheetCodeEntity(
+            eventSheetCode = this.eventSheetCode,
         )
     }
 }

@@ -42,7 +42,7 @@ class ParticipantEntity(
 ) {
     fun toDomain(): Participant {
         return Participant(
-            eventSheetCode = this.eventSheetEntity.eventSheetCodeEntity.eventCode,
+            eventSheetCode = this.eventSheetEntity.eventSheetCodeEntity.eventSheetCode,
             user = user.toDomain(),
             role = role.participantRole,
             timeZone = timeZoneEntity.toDomain(),

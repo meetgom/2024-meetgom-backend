@@ -18,7 +18,7 @@ data class EventSheetResponse(
         description = "이벤트 시트 코드",
         defaultValue = "word-word-word",
     )
-    val eventCode: String,
+    val eventSheetCode: String,
 
     @Schema(
         title = "Name",

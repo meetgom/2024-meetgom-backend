@@ -100,7 +100,7 @@ data class EventSheet(
     fun toResponse(): EventSheetResponse {
         return EventSheetResponse(
             id = this.id,
-            eventCode = this.eventSheetCode.eventCode,
+            eventSheetCode = this.eventSheetCode.eventSheetCode,
             name = this.name,
             description = this.description,
             eventSheetType = this.eventSheetType,

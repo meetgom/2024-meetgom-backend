@@ -13,6 +13,8 @@ import com.meetgom.backend.exception.exceptions.ParticipantExceptions
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.type.ParticipantRoleType
 import com.meetgom.backend.type.UserType
+import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.extends.sorted
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
@@ -32,12 +34,15 @@ class ParticipantService(
         eventSheetCode: String,
         userName: String,
         password: String,
-        region: String,
+        region: String?,
         tempAvailableTimeSlots: List<TempParticipantAvailableTimeSlot>,
     ): Participant {
         val eventSheetEntity = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCode)
         val eventSheet = eventSheetEntity.toDomain()
-        val timeZone = commonEventSheetService.findTimeZoneEntityByRegionWithException(region = region).toDomain()
+        val timeZone =
+            if (region == null) eventSheet.hostTimeZone else commonEventSheetService.findTimeZoneEntityByRegionWithException(
+                region = region
+            ).toDomain()
         val anonymousUserEntity = commonUserService.createUser(
             userType = UserType.ANONYMOUS,
             userName = userName,
@@ -50,7 +55,6 @@ class ParticipantService(
             timeZone = timeZone,
             tempAvailableTimeSlots = tempAvailableTimeSlots
         )
-
         val participantEntity = Participant(
             eventSheetCode = eventSheetCode,
             user = anonymousUserEntity.toDomain(),
@@ -86,7 +90,7 @@ class ParticipantService(
 
             EventSheetType.RECURRING_WEEKDAYS -> {
                 val dayOfWeekDateMap =
-                    eventSheet.eventSheetTimeSlots.fold(EnumMap<DayOfWeek, LocalDate>(DayOfWeek::class.java)) { acc, eventSheetTimeSlot ->
+                    convertedEventSheet.eventSheetTimeSlots.fold(EnumMap<DayOfWeek, LocalDate>(DayOfWeek::class.java)) { acc, eventSheetTimeSlot ->
                         acc[eventSheetTimeSlot.date.dayOfWeek] = eventSheetTimeSlot.date
                         acc
                     }
@@ -101,24 +105,11 @@ class ParticipantService(
                     )
                 }
             }
-        }
+        }.sorted(eventSheetType = convertedEventSheet.eventSheetType)
         availableTimeSlots.forEach { timeSlot ->
-            val res = !eventSheet.eventSheetTimeSlots.any {
-                println(
-                    "eventSheetTimeSlots: ${it.date} ${it.date.dayOfWeek} ${it.startTime} ${it.endTime} ${
-                        it.contains(
-                            timeSlot
-                        )
-                    } / ${timeSlot.date} ${timeSlot.startTime} ${timeSlot.endTime}"
-                )
-                it.contains(timeSlot)
-            }
-            print("include res: $res")
-            if (res) {
-                throw ParticipantExceptions.AVAILABLE_TIME_SLOT_INVALID_TIME_SLOTS.toException()
-            }
+            val res = convertedEventSheet.eventSheetTimeSlots.any { it.contains(timeSlot) }
+            if (!res) throw ParticipantExceptions.AVAILABLE_TIME_SLOT_INVALID_TIME_SLOTS.toException()
         }
-
         return availableTimeSlots
     }
 }
