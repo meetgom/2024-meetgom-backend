@@ -17,7 +17,6 @@ class ParticipantAvailableTimeSlotEntity(
 
     @MapsId("participantId")
     @ManyToOne(targetEntity = ParticipantEntity::class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "participant_id")
     @JsonBackReference
     var participantEntity: ParticipantEntity? = null,
 ) {
@@ -34,7 +33,7 @@ class ParticipantAvailableTimeSlotEntity(
 @Embeddable
 data class ParticipantAvailableTimeSlotPrimaryKey(
     @Column(name = "participant_id")
-    val participantId: Long? = null,
+    var participantId: Long? = null,
 
     @Column(name = "date")
     val date: LocalDate,

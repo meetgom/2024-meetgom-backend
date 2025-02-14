@@ -11,7 +11,47 @@ interface ParticipantRepository : JpaRepository<ParticipantEntity, Long> {
     fun findByEventSheetCode(@Param("eventSheetCode") eventSheetCode: String): List<ParticipantEntity>
 
     @Modifying
-    @Query("UPDATE user u SET u.deletedAt = CURRENT_TIMESTAMP WHERE  u.userType = 'ANONYMOUS' AND u.id IN (SELECT p.userEntity.id FROM participant p WHERE p.eventSheetEntity.eventSheetCodeEntity.eventSheetCode = :eventSheetCode)")
+    @Query(
+        """
+    UPDATE participant p
+    JOIN event_sheet e ON e.id = p.event_sheet_id
+    SET p.deleted_at = CURRENT_TIMESTAMP
+    WHERE p.deleted_at IS NULL 
+    AND e.event_sheet_code = :eventSheetCode
+""", nativeQuery = true
+    )
+    fun deleteAllParticipantEntityByEventSheetCode(@Param("eventSheetCode") eventSheetCode: String): Int?
+
+    @Modifying
+    @Query(
+        """
+    UPDATE participant p
+    JOIN event_sheet e ON e.id = p.event_sheet_id
+    SET p.deleted_at = CURRENT_TIMESTAMP
+    WHERE p.deleted_at IS NULL 
+    AND e.event_sheet_code = :eventSheetCode
+    AND p.id = :participantId
+""", nativeQuery = true
+    )
+    fun deleteParticipantEntityById(
+        @Param("eventSheetCode") eventSheetCode: String,
+        @Param("participantId") participantId: Long
+    ): Int?
+
+    @Modifying
+    @Query(
+        """
+            DELETE FROM participant_available_time_slot 
+            WHERE participant_id = :participantId
+        """, nativeQuery = true
+    )
+    fun deleteParticipantEntityTimeSlots(
+        @Param("eventSheetCode") eventSheetCode: String,
+        @Param("participantId") participantId: Long
+    ): Int?
+
+    @Modifying
+    @Query("UPDATE user u SET u.deletedAt = CURRENT_TIMESTAMP WHERE  u.userType = 'ANONYMOUS' AND u.deletedAt IS NULL AND u.id IN (SELECT p.userEntity.id FROM participant p WHERE p.eventSheetEntity.eventSheetCodeEntity.eventSheetCode = :eventSheetCode)")
     fun deleteAnonymousUserEntityByEventSheetCode(@Param("eventSheetCode") eventSheetCode: String): Int?
 }
 

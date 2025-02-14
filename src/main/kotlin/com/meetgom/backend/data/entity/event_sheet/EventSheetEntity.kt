@@ -112,7 +112,7 @@ class EventSheetEntity(
             hostTimeZone = this.hostTimeZoneEntity.toDomain(),
             eventSheetCode = eventSheetCodeEntity.toDomain(),
             eventSheetTimeSlots = this.eventSheetTimeSlotEntities.map { it.toDomain() },
-            participants = this.participantEntities?.mapNotNull { if (it.userEntity.deletedAt == null) it.toDomain() else null }
+            participants = this.participantEntities?.mapNotNull { if (it.deletedAt == null && it.userEntity.deletedAt == null) it.toDomain() else null }
                 ?: emptyList(),
         )
         return eventSheet.convertTimeZone()

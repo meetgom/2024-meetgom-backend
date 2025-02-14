@@ -104,23 +104,8 @@ class EventSheetService(
     @Transactional
     fun deleteEventSheetByEventSheetCode(eventSheetCode: String): Boolean {
         commonEventSheetService.deleteEventSheetEntityByEventSheetCode(eventSheetCodeValue = eventSheetCode)
-        commonParticipantService.deleteAnonymousUserEntityByEventSheetCode(eventSheetCode = eventSheetCode)
+        commonParticipantService.deleteAllParticipantEntityByEventSheetCode(eventSheetCode = eventSheetCode)
         return true
-    }
-
-    @Transactional
-    fun readParticipantInEventSheet(
-        eventSheetCode: String,
-        participantId: Long,
-        region: String?
-    ): Pair<EventSheetType, Participant> {
-        val eventSheet =
-            commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
-                .toDomain()
-        val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
-        val participant = convertedEventSheet.participants.find { it.id == participantId }
-            ?: throw ParticipantExceptions.PARTICIPANT_NOT_FOUND.toException()
-        return Pair(convertedEventSheet.eventSheetType, participant)
     }
 
     // MARK: - Private Methods

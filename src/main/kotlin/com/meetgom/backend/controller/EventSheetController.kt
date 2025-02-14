@@ -2,10 +2,7 @@ package com.meetgom.backend.controller
 
 import com.meetgom.backend.domain.model.event_sheet.EventSheetTimeSlot
 import com.meetgom.backend.controller.http.HttpResponse
-import com.meetgom.backend.controller.http.request.PostEventSheetRequest
-import com.meetgom.backend.controller.http.request.PostRecurringWeekdaysEventSheetRequest
-import com.meetgom.backend.controller.http.request.PostSpecificDatesEventSheetRequest
-import com.meetgom.backend.controller.http.request.PutEventSheetRequest
+import com.meetgom.backend.controller.http.request.*
 import com.meetgom.backend.controller.http.response.EventSheetResponse
 import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.service.EventSheetService
@@ -96,21 +93,5 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
     ): HttpResponse<Unit> {
         eventSheetService.deleteEventSheetByEventSheetCode(eventSheetCode)
         return HttpResponse.of(Unit)
-    }
-
-
-    @GetMapping(path = ["/{eventSheetCode}/{participantId}"])
-    @Operation(summary = "read participant in Event Sheet")
-    fun getParticipantInEventSheet(
-        @PathVariable eventSheetCode: String,
-        @PathVariable participantId: Long,
-        @RequestParam region: String?,
-    ): HttpResponse<ParticipantResponse> {
-        val (eventSheetType, participant) = eventSheetService.readParticipantInEventSheet(
-            eventSheetCode = eventSheetCode,
-            participantId = participantId,
-            region = region,
-        )
-        return HttpResponse.of(participant.toResponse(hideDate = eventSheetType == EventSheetType.RECURRING_WEEKDAYS))
     }
 }

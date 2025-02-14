@@ -2,6 +2,7 @@ package com.meetgom.backend.domain.service
 
 import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
+import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.data.entity.user.UserEntity
 import com.meetgom.backend.data.repository.ParticipantRepository
 import com.meetgom.backend.data.repository.UserRepository
@@ -96,6 +97,59 @@ class ParticipantService(
         )
     }
 
+    @Transactional
+    fun readParticipantInEventSheet(
+        eventSheetCode: String,
+        participantId: Long,
+        region: String?
+    ): Pair<EventSheetType, Participant> {
+        val eventSheet =
+            commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
+                .toDomain()
+        val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
+        val participant = convertedEventSheet.participants.find { it.id == participantId }
+            ?: throw ParticipantExceptions.PARTICIPANT_NOT_FOUND.toException()
+        return Pair(convertedEventSheet.eventSheetType, participant)
+    }
+
+    @Transactional(rollbackOn = [Exception::class])
+    fun updateParticipantInEventSheet(
+        eventSheetCode: String,
+        participantId: Long,
+        userName: String?,
+        region: String?,
+        tempAvailableTimeSlots: List<TempParticipantAvailableTimeSlot>?
+    ): Participant {
+        val eventSheet = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCode).toDomain()
+        val participantEntity = commonParticipantService.findParticipantEntityByIdWithException(participantId)
+        val timeZoneEntity = region?.let { commonEventSheetService.findTimeZoneEntityByRegionWithException(it) }
+            ?: participantEntity.timeZoneEntity
+        val availableTimeSlots = tempAvailableTimeSlots?.let {
+            validateTemporaryAvailableTimeSlots(
+                eventSheet = eventSheet,
+                timeZone = timeZoneEntity.toDomain(),
+                tempAvailableTimeSlots = it
+            )
+        }
+        participantEntity.update(
+            userName = userName,
+            timeZoneEntity = timeZoneEntity,
+            availableTimeSlots = availableTimeSlots
+        )
+        return participantRepository.save(participantEntity).toDomain()
+    }
+
+    @Transactional
+    fun deleteParticipantInEventSheet(
+        eventSheetCode: String,
+        participantId: Long
+    ): Boolean {
+        commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCode).toDomain()
+        val res = (participantRepository.deleteParticipantEntityById(eventSheetCode, participantId) ?: 0) > 0
+        if (!res) throw ParticipantExceptions.PARTICIPANT_NOT_FOUND.toException()
+        return true
+    }
+
     // MARK: - Private Methods
     private fun createParticipant(
         eventSheetEntity: EventSheetEntity,
@@ -107,7 +161,7 @@ class ParticipantService(
         if (!eventSheet.isActive()) throw EventSheetExceptions.EVENT_SHEET_NOT_ACTIVE.toException()
         val timeZone = timeZoneEntity.toDomain()
         val role = ParticipantRoleType.PARTICIPANT
-        val participantRoleEntity = commonParticipantService.findPariticipantRoleEntityByRoleTypeWithException(role)
+        val participantRoleEntity = commonParticipantService.findParticipantRoleEntityByRoleTypeWithException(role)
         val participantEntity = Participant(
             eventSheetCode = eventSheet.eventSheetCode.eventSheetCode,
             user = userEntity.toDomain(),

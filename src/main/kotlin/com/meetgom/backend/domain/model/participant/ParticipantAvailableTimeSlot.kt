@@ -60,7 +60,7 @@ data class ParticipantAvailableTimeSlot(
     fun toEntity(participantEntity: ParticipantEntity? = null): ParticipantAvailableTimeSlotEntity {
         return ParticipantAvailableTimeSlotEntity(
             participantAvailableTimeSlotPrimaryKey = ParticipantAvailableTimeSlotPrimaryKey(
-                participantId = this.participantId,
+                participantId = participantEntity?.id ?: this.participantId,
                 date = this.date,
                 startTime = this.startTime,
             ),

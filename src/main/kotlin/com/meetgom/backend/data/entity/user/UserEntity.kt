@@ -16,7 +16,7 @@ class UserEntity(
     val id: Long? = null,
 
     @Column(name = "user_name")
-    val userName: String,
+    var userName: String,
 
     @Column(name = "user_type")
     @Enumerated(EnumType.STRING)

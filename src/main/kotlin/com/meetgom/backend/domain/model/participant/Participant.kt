@@ -15,6 +15,7 @@ import com.meetgom.backend.utils.extends.sorted
 
 data class Participant(
     val id: Long? = null,
+    val participantName: String? = null,
     val eventSheetCode: String,
     val user: User,
     val role: ParticipantRoleType,
@@ -34,6 +35,7 @@ data class Participant(
 
         return Participant(
             id = id,
+            participantName = participantName,
             eventSheetCode = eventSheetCode,
             user = user,
             role = role,
@@ -60,6 +62,7 @@ data class Participant(
             throw EventSheetExceptions.UNMATCHED_ROLE_TYPE.toException()
         val participantEntity = ParticipantEntity(
             eventSheetEntity = eventSheetEntity,
+            participantName = participantName,
             userEntity = userEntity,
             roleEntity = participantRoleEntity,
             timeZoneEntity = participant.timeZone.toEntity(),
@@ -75,6 +78,7 @@ data class Participant(
         return ParticipantResponse(
             id = id,
             eventSheetCode = eventSheetCode,
+            participantName = participantName ?: user.userName,
             user = user.toResponse(),
             role = role,
             timeZone = timeZone.region,
