@@ -27,7 +27,7 @@ data class EventSheet(
     val updatedAt: ZonedDateTime? = null,
     val participants: List<Participant>,
 ) {
-    private fun isActive(): Boolean {
+    fun isActive(): Boolean {
         val now = ZonedDateTime.now()
         manualActive?.let {
             return it

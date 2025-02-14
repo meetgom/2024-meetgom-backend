@@ -7,6 +7,7 @@ enum class EventSheetExceptions(
     override val status: MGExceptionStatus,
     override val message: String,
 ) : MGExceptions {
+    EVENT_SHEET_NOT_ACTIVE(MGExceptionStatus.BAD_REQUEST, "이벤트 시트가 활성화되지 않았습니다."),
     EVENT_SHEET_CODE_NOT_FOUND(MGExceptionStatus.NOT_FOUND, "EventSheet 코드를 찾을 수 없습니다."),
     EVENT_SHEET_NOT_FOUND(MGExceptionStatus.NOT_FOUND, "EventSheet을 찾을 수 없습니다."),
     TIME_ZONE_NOT_FOUND(MGExceptionStatus.NOT_FOUND, "TimeZone을 찾을 수 없습니다."),
