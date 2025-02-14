@@ -309,7 +309,7 @@ function shutdown_server {
     success_message "Running process: $current_pid/$current_program"
     default_message "Shutting down the $current_program process..."
     kill -9 "$current_pid"
-    error_message "Shut downed.\n"
+    error_message -sp "Shut downed.\n"
   elif [[ -z "$current_program" ]]; then
     default_message "No running process.\n"
   else
