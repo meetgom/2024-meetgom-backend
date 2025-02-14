@@ -19,31 +19,5 @@ class EventSheetTests @Autowired constructor(
     private val eventSheetRepository: EventSheetRepository,
     private val timeZoneRepository: TimeZoneRepository,
 ) {
-    @Test
-    fun saveTest() {
-        val timeZone = timeZoneRepository.findByRegion("Asia/Seoul")!!
-        val eventSheetTimeSlotEntity = EventSheetTimeSlotEntity(
-            eventSheetTimeSlotPrimaryKey = EventSheetTimeSlotPrimaryKey(
-                date = LocalDate.now(),
-                startTime = LocalTime.MIN,
-            ),
-            endTime = TimeUtils.MAX_LOCAL_TIME,
-        )
 
-        val eventSheetEntity = EventSheetEntity(
-            eventSheetCodeEntity = EventSheetCode("test3").toEntity(),
-            name = "test",
-            description = "test",
-            timeZoneEntity = timeZone,
-            hostTimeZoneEntity = timeZone,
-            manualActive = true,
-            eventSheetType = EventSheetType.RECURRING_WEEKDAYS,
-            activeStartDateTime = null,
-            activeEndDateTime = null,
-            eventSheetTimeSlotEntities = mutableListOf(),
-        )
-        eventSheetTimeSlotEntity.eventSheetEntity = eventSheetEntity
-        eventSheetEntity.eventSheetTimeSlotEntities.add(eventSheetTimeSlotEntity)
-        val vvv = eventSheetRepository.save(eventSheetEntity)
-    }
 }
