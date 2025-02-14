@@ -7,7 +7,7 @@ import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.model.participant.TempParticipantAvailableTimeSlot
 import com.meetgom.backend.domain.service.ParticipantService
 import com.meetgom.backend.exception.exceptions.ParticipantExceptions
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*

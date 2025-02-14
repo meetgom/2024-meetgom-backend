@@ -1,7 +1,7 @@
 package com.meetgom.backend.controller.http.request
 
 import com.meetgom.backend.type.EventSheetType
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size

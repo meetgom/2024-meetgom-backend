@@ -5,7 +5,7 @@ import com.meetgom.backend.data.entity.participant.ParticipantAvailableTimeSlotE
 import com.meetgom.backend.data.entity.participant.ParticipantAvailableTimeSlotPrimaryKey
 import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.domain.model.common.TimeZone
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import com.meetgom.backend.utils.extends.changeWithTimeZone
 import com.meetgom.backend.utils.extends.untilDays
 import java.time.LocalDate

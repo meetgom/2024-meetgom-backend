@@ -4,7 +4,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
-import java.util.*
 
 @Component
 class ApplicationStartedEventListener : ApplicationListener<ApplicationStartedEvent> {

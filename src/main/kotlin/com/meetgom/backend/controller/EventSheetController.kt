@@ -9,7 +9,7 @@ import com.meetgom.backend.controller.http.response.EventSheetResponse
 import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.service.EventSheetService
 import com.meetgom.backend.type.EventSheetType
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*

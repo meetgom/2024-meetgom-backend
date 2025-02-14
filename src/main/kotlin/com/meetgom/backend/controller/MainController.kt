@@ -3,7 +3,7 @@ package com.meetgom.backend.controller
 import com.meetgom.backend.controller.http.HttpResponse
 import com.meetgom.backend.controller.http.response.ServerStatusResponse
 import com.meetgom.backend.utils.listener.ApplicationStartedEventListener
-import com.meetgom.backend.utils.GitUtils
+import com.meetgom.backend.utils.utils.GitUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,14 +19,13 @@ class MainController {
     fun getMeetgomStatus(): HttpResponse<ServerStatusResponse> {
         val running = "Server is running"
         val startedAt = ApplicationStartedEventListener.startTime
-        val gitBranch = GitUtils.getGitBranch()
-        val latestGitLog = GitUtils.getGitLogs().firstOrNull() ?: "Git log is not available"
+        val gitInfo = GitUtils.gitInfo()
+
         return HttpResponse.of(
             ServerStatusResponse(
                 status = running,
                 startedAt = startedAt,
-                gitBranch = gitBranch,
-                latestGitLog = latestGitLog
+                git = gitInfo
             )
         )
     }

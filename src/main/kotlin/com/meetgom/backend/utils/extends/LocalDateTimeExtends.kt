@@ -1,7 +1,7 @@
 package com.meetgom.backend.utils.extends
 
 import com.meetgom.backend.domain.model.common.TimeZone
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import java.time.*
 import java.time.temporal.ChronoUnit
 

@@ -6,7 +6,7 @@ import com.meetgom.backend.controller.http.response.EventSheetResponse
 import com.meetgom.backend.controller.http.response.ParticipantTimeSlotTableResponse
 import com.meetgom.backend.domain.model.participant.Participant
 import com.meetgom.backend.type.EventSheetType
-import com.meetgom.backend.utils.TimeUtils
+import com.meetgom.backend.utils.utils.TimeUtils
 import com.meetgom.backend.utils.extends.sorted
 import com.meetgom.backend.utils.extends.toTimeZone
 import java.time.ZonedDateTime
