@@ -23,7 +23,7 @@ data class PostAnonymousParticipantRequest(
         title = "confirmPassword",
         description = "비밀번호 확인",
         required = true,
-        defaultValue = "confirmPassword"
+        defaultValue = "password"
     )
     val confirmPassword: String,
 

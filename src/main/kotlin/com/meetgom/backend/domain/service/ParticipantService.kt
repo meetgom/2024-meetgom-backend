@@ -34,7 +34,7 @@ class ParticipantService(
     private val participantRepository: ParticipantRepository,
     private val userRepository: UserRepository
 ) {
-    @Transactional
+    @Transactional(rollbackOn = [Exception::class])
     fun createAnonymousParticipant(
         eventSheetCode: String,
         userName: String,
@@ -66,6 +66,7 @@ class ParticipantService(
         )
     }
 
+    @Transactional
     fun createStandardParticipant(
         eventSheetCode: String,
         region: String?,
@@ -73,7 +74,6 @@ class ParticipantService(
     ): Participant {
         val eventSheetEntity = commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCode)
         val eventSheet = eventSheetEntity.toDomain()
-        if (!eventSheet.isActive()) throw EventSheetExceptions.EVENT_SHEET_NOT_ACTIVE.toException()
         val timeZone =
             if (region == null) eventSheet.hostTimeZone else commonEventSheetService.findTimeZoneEntityByRegionWithException(
                 region = region
@@ -104,6 +104,7 @@ class ParticipantService(
         availableTimeSlots: List<ParticipantAvailableTimeSlot>,
     ): Participant {
         val eventSheet = eventSheetEntity.toDomain()
+        if (!eventSheet.isActive()) throw EventSheetExceptions.EVENT_SHEET_NOT_ACTIVE.toException()
         val timeZone = timeZoneEntity.toDomain()
         val role = ParticipantRoleType.PARTICIPANT
         val participantRoleEntity = commonParticipantService.findPariticipantRoleEntityByRoleTypeWithException(role)
