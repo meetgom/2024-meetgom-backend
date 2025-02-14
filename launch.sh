@@ -239,11 +239,15 @@ function git_pull {
 # - Build the java server.
 function build_server {
   status_message "Build the java server..."
-  path="" clean="" exit_opt=""
+  path="" clean="" exit_opt="" build_test=("-x" "test")
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
       -e)
         exit_opt="-e"
+        shift
+        ;;
+      -t)
+        build_test=()
         shift
         ;;
       -c)
@@ -266,7 +270,7 @@ function build_server {
   output=""
   while IFS= read -r line; do
     message_validator "$line"
-  done < <(./gradlew $clean build 2>&1)
+  done < <(./gradlew $clean build "${build_test[@]}" 2>&1)
   echo ""
   cd "$current" || return
 }
@@ -391,7 +395,7 @@ port="8080"
 session=()
 background=0 background_out=()
 sp=0 cb=""
-no_changed=0 build=0 reboot=0
+no_changed=0 build=0 bt="" reboot=0
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     -h)
@@ -404,6 +408,10 @@ while [[ "$#" -gt 0 ]]; do
       ;;
     -b)
       build=1
+      shift
+      ;;
+    -bt)
+      bt="-t"
       shift
       ;;
     -bc)
@@ -448,7 +456,7 @@ if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; t
 fi
 
 if [ "$no_changed" -eq 0 ] || [ "$build" -eq 1 ]; then
-  build_server "$project_path" "$cb" -e
+  build_server "$project_path" "$cb" "$bt" -e
 fi
 
 if [ "$reboot" -eq 1 ] || { [ "$no_changed" -eq 0 ] && [ "$reboot" -ne 1 ]; }; then
