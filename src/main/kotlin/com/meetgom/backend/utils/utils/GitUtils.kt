@@ -34,8 +34,9 @@ class GitUtils {
                     if (dir.resolve(".git").exists()) break
                     dir = dir.parentFile
                 }
+                val gitPath = dir.absolutePath.replace(home, "~")
                 return GitInfo(
-                    gitDir = dir.absolutePath,
+                    gitDir = gitPath,
                     branch = getGitBranch(dir = dir),
                     logs = getGitLogs(dir = dir).take(logLimit)
                 )
