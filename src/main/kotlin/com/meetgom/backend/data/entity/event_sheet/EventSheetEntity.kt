@@ -5,6 +5,7 @@ import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.participant.ParticipantEntity
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.type.EventSheetType
+import com.meetgom.backend.utils.extends.toTimeZone
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -17,10 +18,10 @@ class EventSheetEntity(
     val id: Long? = null,
 
     @Column(name = "name", length = 256)
-    val name: String,
+    var name: String,
 
     @Column(name = "description", length = 1024)
-    val description: String?,
+    var description: String?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "event_sheet_type")
@@ -42,10 +43,10 @@ class EventSheetEntity(
     val hostTimeZoneEntity: TimeZoneEntity,
 
     @Column(name = "active_start_date_time")
-    val activeStartDateTime: ZonedDateTime?,
+    var activeStartDateTime: ZonedDateTime?,
 
     @Column(name = "active_end_date_time")
-    val activeEndDateTime: ZonedDateTime?,
+    var activeEndDateTime: ZonedDateTime?,
 
     @OneToMany(
         cascade = [CascadeType.ALL],
@@ -61,14 +62,14 @@ class EventSheetEntity(
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    val updatedAt: ZonedDateTime? = null,
+    var updatedAt: ZonedDateTime? = null,
 
     @CreationTimestamp
     @Column(name = "created_at")
     val createdAt: ZonedDateTime? = null,
 
     @Column(name = "manual_active")
-    val manualActive: Boolean? = false,
+    var manualActive: Boolean? = false,
 
     @OneToMany(
         cascade = [CascadeType.ALL],
@@ -79,6 +80,23 @@ class EventSheetEntity(
     @JsonManagedReference
     var participantEntities: MutableList<ParticipantEntity>? = null,
 ) {
+    fun update(
+        name: String?,
+        description: String?,
+        activeStartDateTime: ZonedDateTime?,
+        activeEndDateTime: ZonedDateTime?,
+        manualActive: Boolean?
+    ) {
+        this.updatedAt = ZonedDateTime.now()
+        this.name = name ?: this.name
+        this.description = description ?: this.description
+        this.activeStartDateTime =
+            activeStartDateTime?.toTimeZone(this.timeZoneEntity.toDomain()) ?: this.activeStartDateTime
+        this.activeEndDateTime =
+            activeEndDateTime?.toTimeZone(this.timeZoneEntity.toDomain()) ?: this.activeEndDateTime
+        this.manualActive = manualActive ?: this.manualActive
+    }
+
     fun toDomain(): EventSheet {
         val eventSheet = EventSheet(
             id = this.id,

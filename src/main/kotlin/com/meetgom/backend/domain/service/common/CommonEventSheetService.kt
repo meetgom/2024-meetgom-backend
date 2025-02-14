@@ -4,7 +4,6 @@ import com.meetgom.backend.data.entity.common.TimeZoneEntity
 import com.meetgom.backend.data.entity.event_sheet.EventSheetEntity
 import com.meetgom.backend.data.repository.EventSheetRepository
 import com.meetgom.backend.data.repository.TimeZoneRepository
-import com.meetgom.backend.data.repository.UserRepository
 import com.meetgom.backend.domain.model.event_sheet.EventSheet
 import com.meetgom.backend.exception.exceptions.EventSheetExceptions
 import org.springframework.stereotype.Service

@@ -14,6 +14,7 @@ import com.meetgom.backend.exception.exceptions.ParticipantExceptions
 import com.meetgom.backend.type.EventSheetType
 import com.meetgom.backend.utils.extends.atTimeZone
 import com.meetgom.backend.utils.extends.sorted
+import com.meetgom.backend.utils.extends.toTimeZone
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -73,6 +74,31 @@ class EventSheetService(
                 .toDomain()
         val convertedEventSheet = commonEventSheetService.convertEventSheetTimeZone(eventSheet, region)
         return convertedEventSheet
+    }
+
+    @Transactional
+    fun updateEventSheetByEventSheetCode(
+        eventSheetCode: String,
+        name: String?,
+        description: String?,
+        activeStartDateTime: LocalDateTime?,
+        activeEndDateTime: LocalDateTime?,
+        manualActive: Boolean?
+    ): EventSheet {
+        val eventSheetEntity =
+            commonEventSheetService.findEventSheetEntityByCodeWithException(eventSheetCodeValue = eventSheetCode)
+        val hostTimeZone = eventSheetEntity.hostTimeZoneEntity.toDomain()
+        val timeZone = eventSheetEntity.timeZoneEntity.toDomain()
+        val activeStartZonedDateTime = activeStartDateTime?.atTimeZone(hostTimeZone)?.toTimeZone(timeZone)
+        val activeEndZonedDateTime = activeEndDateTime?.atTimeZone(hostTimeZone)?.toTimeZone(timeZone)
+        eventSheetEntity.update(
+            name = name,
+            description = description,
+            activeStartDateTime = activeStartZonedDateTime,
+            activeEndDateTime = activeEndZonedDateTime,
+            manualActive = manualActive
+        )
+        return eventSheetRepository.save(eventSheetEntity).toDomain()
     }
 
     @Transactional

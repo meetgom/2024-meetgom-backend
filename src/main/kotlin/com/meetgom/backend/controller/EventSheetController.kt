@@ -5,6 +5,7 @@ import com.meetgom.backend.controller.http.HttpResponse
 import com.meetgom.backend.controller.http.request.PostEventSheetRequest
 import com.meetgom.backend.controller.http.request.PostRecurringWeekdaysEventSheetRequest
 import com.meetgom.backend.controller.http.request.PostSpecificDatesEventSheetRequest
+import com.meetgom.backend.controller.http.request.PutEventSheetRequest
 import com.meetgom.backend.controller.http.response.EventSheetResponse
 import com.meetgom.backend.controller.http.response.ParticipantResponse
 import com.meetgom.backend.domain.service.EventSheetService
@@ -67,6 +68,23 @@ class EventSheetController(private val eventSheetService: EventSheetService) {
         val eventSheet = eventSheetService.readEventSheetByEventSheetCode(
             eventSheetCode = eventSheetCode,
             region = region,
+        )
+        return HttpResponse.of(eventSheet.toResponse())
+    }
+
+    @PutMapping(path = ["{eventSheetCode}"])
+    @Operation(summary = "update Event Sheet")
+    fun putEventSheetByEventSheetCode(
+        @PathVariable eventSheetCode: String,
+        @RequestBody putEventSheetRequest: PutEventSheetRequest
+    ): HttpResponse<EventSheetResponse> {
+        val eventSheet = eventSheetService.updateEventSheetByEventSheetCode(
+            eventSheetCode = eventSheetCode,
+            description = putEventSheetRequest.description,
+            name = putEventSheetRequest.name,
+            activeStartDateTime = putEventSheetRequest.activeStartDateTime,
+            activeEndDateTime = putEventSheetRequest.activeEndDateTime,
+            manualActive = putEventSheetRequest.manualActive,
         )
         return HttpResponse.of(eventSheet.toResponse())
     }
